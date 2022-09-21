@@ -1,0 +1,192 @@
+---
+title: "01 - Introduction to statistic"
+author: "Chun Yu, Ko"
+date: "2022-09-16"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
+    number_sections: true
+---
+
+
+```{r, 01_package, echo=F, warning=F, message=F}
+
+library(dplyr)
+library(data.table)
+
+library(stringr)
+library(scales)
+
+library(ggplot2)
+library(ggpubr)
+library(ggthemes)
+
+library(plotly)
+
+library(colorspace)
+
+library(kableExtra)
+```
+
+```{r, 02_environment, echo=F, warning=F, message=F}
+options(scipen = 999)
+Sys.setlocale("LC_TIME", "C")%>%invisible()
+showtext::showtext.auto(enable = TRUE)
+showtext::showtext_opts(dpi = 300)
+```
+
+# Key point
+
+## Primary & Secondary Data
+
+為什麼觀察性研究所使用的資料，可能是回溯性、也可能是前瞻性的研究，那為什麼就一定是 Primary data？
+
+ - 初級、與次級資料，與研究的類型並不一定有直接關係
+
+ - 利用「資料收集的目的」、與資料收集的方法可以區分初級、與次級資料
+ 
+ - 有針對性對對象收集第一手的數據則為初級資料
+ 
+ - 使用其他目的所收集的資料則可以視為次級資料
+ 
+## Frequentist vs Bayesian
+
+為什麼 CRA / CRO 主要都還是透過頻率學派的統計方法進行研究？
+
+ - 機率方法最近幾年比較盛行，目前多數的研究還依循著慣例進行統計分析
+
+# On-class practice
+
+## Sales data
+
+```{r, 03_data_sales, echo=F, warning=F, message=F}
+data_sales <- data.frame(
+  date = c("2020-01-21", "2020-02-24", "2020-02-27", "2020-03-29", "2020-03-11", "2020-03-05", "2020-01-10", "2020-03-01", "2020-02-01", "2020-02-12", "2020-02-04", "2020-02-08", "2020-02-15", "2020-03-03", "2020-02-28", "2020-03-08", "2020-03-16", "2020-02-27", "2020-03-02", "2020-03-03", "2020-03-05", "2020-03-10") %>% as.Date(),
+  type = c("A", "A", "A", "A", "A", "B", "B", "B", "B", "B", "B", "B", "B", "B", "C", "C", "C", "C", "C", "C", "C", "C"),
+  value = c(10, 40, 120, 210, 60, 10, 140, 70, 30, 80, 20, 30, 20, 40, 50, 100, 80, 10, 20, 30, 50, 60)
+)
+```
+
+### Raw data
+
+```{r, 04_present_table_sale, echo=F, warning=F, message=F}
+data_sales%>%
+  arrange(type, date, value)%>%
+  select(type, date, value)%>%
+  kable(
+    col.names = c("Seller", "Date", "Volume"),
+    align = "crr"
+  ) %>%
+  collapse_rows(c(1))%>%
+  kable_styling(full_width = F, c("hover", "condensed", "striped"))
+```
+
+### Descriptive summary
+
+```{r, 05_summary_table_of_sale, echo=F, warning=F, message=F}
+data_sales %>%
+  group_by(type) %>%
+  summarise(
+    n = n(),
+    sum = value %>% sum(),
+    mean = sum / n,
+    median = value %>% median()
+  ) %>%
+  ungroup() %>%
+  mutate(rate = sum / sum(sum)) %>%
+  mutate_at(.vars = names(.)[names(.) %>% grepl("rate", .)], funs(percent(., .1))) %>%
+  mutate_if(is.numeric, funs(comma(., .1))) %>%
+  kable(
+    col.names = c("Seller", "Days", "Total", "Mean", "Median", "Contribution"),
+    align = "crrrrr"
+  ) %>%
+  kable_styling(full_width = F, c("hover", "condensed", "striped"))%>%
+  add_header_above(c(" " = 1, "Sales volume" = 5))
+```
+
+### Trend
+
+```{r, 06_trend_of_sale, echo=F, warning=F, message=F}
+data_sales%>%
+  ggplot(aes(date, value, color = type))+
+  geom_point()+
+  geom_point(color = "white", size = 1)+
+  geom_smooth(se = F, method = "lm", size = .5, linetype = 2)+
+  labs(x = "Date", y = "volume", color = "Seller")+
+  scale_color_discrete_qualitative("Cold")+
+  theme_fivethirtyeight()
+```
+
+## Visitors data
+
+```{r, 07_data_visitors, echo=F, warning=F, message=F}
+data_hour = data.frame(hour=c("10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm"),
+                       "2017-12-28"=c(61, 178, 213, 273, 297, 345, 255, 140, 90, 99, 83),
+                       "2017-12-29"=c(95, 184, 207, 233, 276, 326, 222, 107, 84, 75, 72),
+                       "2017-12-30"=c(74, 113, 114, 141, 211, 278, 243, 120, 51, 67, 59),
+                       "2017-12-31"=c(89, 183, 240, 245, 295, 321, 251, 115, 70, 31, 72),
+                       "2018-01-01"=c(182, 289, 366, 422, 499, 588, 621, 488, 379, 325, 255),
+                       "2018-01-02"=c(191, 356, 433, 495, 561, 553, 528, 381, 320, 279, 254))
+```
+
+### Raw data
+
+```{r, 08_data_visitors, echo=F, warning=F, message=F}
+data_hour%>%
+  data.table()%>%
+  melt(id.vars = 1, variable.name = "date")%>%
+  mutate(date = date%>%as.Date(., format = "X%Y.%m.%d"),
+         datetime = paste(date%>%as.character(), hour) %>% lubridate::parse_date_time(., "%Y-%m-%d%h%p"),
+         hour = datetime %>% hour)%>%
+  select(date, hour, value)%>%
+  arrange(date, hour)%>%
+  kable(
+    col.names = c("Date", "Hour", "Visitor"),
+    align = "crr"
+  ) %>%
+  collapse_rows(c(1))%>%
+  kable_styling(full_width = F, c("hover", "condensed", "striped"))
+```
+
+### Heatmap
+
+```{r, 09_data_visitors, echo=F, warning=F, message=F}
+data_hour%>%
+  data.table()%>%
+  melt(id.vars = 1, variable.name = "date")%>%
+  mutate(date = date%>%as.Date(., format = "X%Y.%m.%d"),
+         datetime = paste(date%>%as.character(), hour) %>% lubridate::parse_date_time(., "%Y-%m-%d%h%p"),
+         hour = datetime %>% hour)%>%
+  mutate(rate = value / sum(value))%>%
+  ggplot(aes(x = hour, y = date, fill = value, label = percent(rate, .1)))+
+  geom_tile(color = "white")+
+  geom_text(size = 3)+
+  colorspace::scale_fill_continuous_sequential("Mint")+
+  coord_fixed()+
+  theme_fivethirtyeight()+
+  theme(legend.position = "none")
+```
+
+### Trend
+
+```{r, 09_trend_visitors, echo=F, warning=F, message=F}
+data_hour%>%
+  data.table()%>%
+  melt(id.vars = 1, variable.name = "date")%>%
+  mutate(date = date%>%as.Date(., format = "X%Y.%m.%d"),
+         datetime = paste(date%>%as.character(), hour) %>% lubridate::parse_date_time(., "%Y-%m-%d%h%p"),
+         hour = datetime %>% hour)%>%
+  mutate(rate = value / sum(value))%>%
+  ggplot(aes(x = hour, y = value, group = date, color = date%>%as.character(), label = percent(rate, .1)))+
+  geom_line()+
+  geom_point()+
+  geom_point(color = "white", size = .1)+
+  colorspace::scale_color_discrete_qualitative("Dark 2")+
+  scale_x_continuous(labels = comma_format(1))+
+  theme_fivethirtyeight()+
+  theme(legend.position = "none")
+```
