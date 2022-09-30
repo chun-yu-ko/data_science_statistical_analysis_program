@@ -1,0 +1,69 @@
+---
+title: "03 - Probability Theory"
+author: "Chun Yu, Ko"
+date: "2022-09-23"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
+    number_sections: true
+---
+
+# Key point
+
+## Probability
+
+ - Sample space：包含所有可能的機率空間，分母
+ 
+ - Event：在 Sample space 中我們關心的事情，分子
+ 
+ - Probability：Event / Sample space
+ 
+   - P(A)：樣本空間 S 中 A 發生的機率
+  
+   - 0 <= P <= 1
+  
+   - sum of all P in S = 1
+
+ - Law of large numbers：測量次數越多，樣本平均值越接近母體真值
+ 
+## Venn diagram
+
+ - Union $\cap$ 聯集：or
+ 
+ - Intersection $\cup$ 交集：and
+ 
+ - $P(A \cup B) = P(A) + P(B) - P(A \cap B) $
+ 
+   - $P(Q) = 5/52$
+   
+   - $P(R) = 26/52$
+   
+   - $P(A \cap B) = 2/52$
+   
+   - $P(A \cup B) = 5/52 + 26/52 - 2/52 = 28/52$
+   
+ - Mutually exclusive events
+ 
+   - $P(A \cap B) = 0$
+   
+ - Collectively exhaustive：窮舉
+ 
+ - Conditional probability：條件機率，probability of something giving some condition
+ 
+   - $P(A | B) = \frac{P(A \cap B)}{P(B)}$
+   
+ - Independent events
+ 
+   - $P(A | B) = P(A)$ 有沒有 B 其實沒差、不影響發生 A 的機率
+   
+   - $P(A \cap B) = P(A)P(B)$
+
+# On-class practice
+
+## An Example for "Mutually exclusive events" and "Collectively exhaustive"
+
+ - True and False, Dz and non-DZ
