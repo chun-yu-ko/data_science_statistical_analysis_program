@@ -12,6 +12,7 @@ output:
     number_sections: true
 ---
 
+[Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
 
 ```{r, 01_package, echo=F, warning=F, message=F}
 

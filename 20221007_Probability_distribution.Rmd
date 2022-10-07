@@ -1,0 +1,113 @@
+---
+title: "04 - Probability distribution"
+author: "Chun Yu, Ko"
+date: "2022-10-07"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
+    number_sections: true
+---
+
+[Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
+
+# Key point
+
+```{r, echo=F, warning=F, message=F}
+library(dplyr)
+library(kableExtra)
+library(ggplot2)
+library(ggthemes)
+library(colorspace)
+```
+
+##  Probability distribution
+
+ - 隨機變數 random variables：一個想要觀察、感興趣的事件，其背後包含出現的機率
+ 
+ - 機率分布 probability distribution：隨機變數背後機率的長相
+
+假設同時丟三個硬幣：
+
+ 1. 請寫出總共有幾種可能的情況？ 正面出現的情形有 4 種， 次數為 0 ~ 3
+
+ 2. 請列出每種情況的機率？0.125, 0.375, 0.375, 0.125
+
+ 3. 請問隨機變數是什麼？三枚硬幣出現正反面的情形
+ 
+```{r, echo=F, warning=F, message=F}
+data_coin = expand.grid(c(T,F), c(T,F), c(T,F))%>%
+  apply(., 1, sum)%>%
+  data.frame(sit = .)%>%
+  group_by(sit)%>%
+  summarise(rate = n())%>%
+  ungroup%>%
+  mutate(rate = rate/sum(rate))
+
+data_coin%>%
+  kable(col.names = c("正面出現次數", "機率"))%>%
+  kable_styling(full_width = F, c("hover", "condensed", "striped"))
+```
+
+### PDF 機率密度函數
+
+$ PDF: P(X = x) $
+
+```{r, echo=F, warning=F, message=F}
+data_coin%>%
+  ggplot(aes(x = sit, y = rate, fill = sit))+
+  geom_col(width = .5)+
+  labs(title = "PDF", x = "Times, as positive", y = "Prob.")+
+  scale_fill_continuous_qualitative("Dark 2")+
+  theme_fivethirtyeight()+
+  theme(legend.position = "none",
+        axis.title = element_text())
+```
+
+### CDF 累積機分佈率函數
+
+$ PDF: P(X <= x) $
+
+```{r, echo=F, warning=F, message=F}
+data_coin%>%
+  mutate(rate = rate %>%cumsum)%>%
+  ggplot(aes(x = sit, y = rate, fill = sit))+
+  geom_col(width = .5)+
+  geom_line()+
+  geom_point()+
+  geom_point(color = "white", size = .5)+
+  labs(title = "CDF", x = "Times, as positive", y = "Prob.")+
+  scale_fill_continuous_qualitative("Dark 2")+
+  theme_fivethirtyeight()+
+  theme(legend.position = "none",
+        axis.title = element_text())
+```
+
+## Distrebution
+
+### Binomial Distribution
+
+觀察 n 次，某事件發生 k 次的機率有多少（某事件只有發生或不發生）
+
+ - $X \sim Bin(n,p)$ 當 X 服從二向分佈時
+
+ - 平均值 $\mu = np$
+
+ - 變異數平方 $\sigma^2 = np(1-p)$
+
+ - 機率密度函數 $P(k) = P(X = k) = {n \choose k} p^k(1-p)^{n-k}$
+
+```{r, echo=F, warning=F, message=F}
+data.frame(x = 1:20,
+           y = dbinom(1:20, 20, prob=0.85))%>%
+  ggplot(aes(x=x, y=y, fill = y)) +
+  geom_col()+
+  scale_fill_continuous_sequential("Oranges")+
+  labs(title = "PDF of Binomial Distribution",
+       subtitle = "n = 20\nk >= 0 & k <= 20\np = 0.85")+
+  theme_fivethirtyeight()+
+  theme(legend.position = "none")
+```
