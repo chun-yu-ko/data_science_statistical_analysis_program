@@ -13,3 +13,5 @@ This is a repo contain the note of "Statistical Analysis" course, which is the d
  2. [02 - Descriptive statistics](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20220923_Descriptive_Statistics.html)
 
  3. [03 - Probability Theory](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20220930_Probability_Theory.html)
+
+ 4. [04 - Probability distribution](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221007_Probability_distribution.html)
