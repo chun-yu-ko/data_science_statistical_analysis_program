@@ -1,0 +1,115 @@
+---
+title: "06 - Probability distribution"
+author: "Chun Yu, Ko"
+date: "2022-10-21"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
+    number_sections: true
+---
+
+[Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
+
+# Key point
+
+```{r, echo=F, warning=F, message=F}
+library(dplyr)
+library(kableExtra)
+library(ggplot2)
+library(ggthemes)
+library(colorspace)
+```
+
+##  Recall: Probability distribution
+
+## Distrebution
+
+### Binomial Distribution
+
+ - 平均值 $E(X) \Sigma_{i=1}^{N} x_i P(x_i)$ 加權平均
+
+ - 變異數 $Var(X) \Sigma_{_i=1}^{N} [x_i-\mu]^2 P(x_i)$ 每個點離平均的距離
+ 
+#### Example
+
+實驗 n 次，每次成功機率為 p ，失敗機率為 q ，$1 = p + p$
+
+設 X 為成功次數，則機率分配函數 $P(X = x) =C_x^n p^x q^{n-x} $
+
+ - 期望值 $E(X) = np$
+
+ - 變異數 $Var(X) = npq$
+
+當 X = 0 時：
+
+ - $P(X = 0) =C_0^n p^0 q^{n}$
+ 
+ - 若投擲 4 次正面機率為 0.5 的硬幣則：$P(X = 0) =C_0^4 (0.5)^0 (0.5)^{4} = 1 \cdot 1 \cdot \cdot 0.625 = 0.0625$
+ 
+    - $C_0^4$ 表示 4 次實驗中完全沒有抽到正面的組合只有一種（全部都反面）
+ 
+    - $(0.5)^0$ 表示正面機率 0.5 抽到 0 次
+ 
+    - $(0.5)^{4}$ 表示反面機率 0.5 抽到 4 次
+ 
+ - 嘗試 `round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))) / 100000,4)`
+
+    - `r round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))) / 100000,4)`
+ 
+當 X = 1 時：
+
+ - $P(X = 1) =C_1^n p^1 q^{n-1} $
+ 
+ - 若投擲 10 次正面機率為 0.5 的硬幣則：$P(X = 1) = C_{1}^{10} (0.5)^1 (0.5)^{9} = 10 \cdot 0.5 \cdot 0.001953125 = 0.009765625$
+ 
+     - $C_1^10$ 表示 10 次實驗中抽到正面只有一次的組合有 10 種組合
+ 
+    - $(0.5)^1$ 表示正面機率 0.5 抽到 1 次
+ 
+    - $(0.5)^{9}$ 表示反面機率 0.5 抽到 9 次
+
+ - 嘗試 `round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 10, size=1, prob=0.5)))) / 100000,6)`
+
+    - `r round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 10, size=1, prob=0.5)))) / 100000, 6)`
+
+#### 證明 $E(X) = np$
+
+期望值是 n 次試驗中所有可能 k 狀態的機率和（就像上面展示的範例一樣）：
+
+$E(x) = \Sigma_{k=0}^{n} kC_{k}^{n}p^kq^{n-k}$
+
+首先展開 $C_{k}^{n} = \frac{n!}{k!(n-k)!}$，則：
+
+$E(x) = \Sigma_{k=0}^{n} k (\frac{n!}{k!(n-k)!}) p^kq^{n-k}$ 
+
+將 $k$ 與分母 $k!$ 消掉，則 $k!$ 變成 $(k-1)!$：
+
+$E(x) = \Sigma_{k=0}^{n} (\frac{n!}{(k-1)!(n-k)!}) p^kq^{n-k}$
+ 
+為了把複雜的 $\Sigma$ 拿掉，首先把一個 n 拿出去，則 $n!$ 變成 $(n-1)!$： 
+
+$E(x) = n \Sigma_{k=0}^{n} (\frac{n-1!}{(k-1)!(n-k)!}) p^kq^{n-k}$
+ 
+再把 $p^k$ 中的一個 p 拿出去變成 $p^{k-1}$：
+
+$E(x) = np \Sigma_{k=0}^{n} (\frac{n-1!}{(k-1)!(n-k)!}) p^{k-1}q^{n-k}$ 
+
+如果把 $(n-1)!$ 視為 $(N!)$、$(k-1)!$ 視為 $(K!)$、$p^{k-1}$ 視為 $p^K$、$(n-k)!$ 則變成 $(N-K)!$，就形成了$(\frac{N!}{(K)!(N-K)!}) p^{K}q^{N-K}$
+
+所以 $(\frac{n-1!}{(k-1)!(n-k)!}) p^{k-1}q^{n-k}$ 跟 $(\frac{n!}{(k)!(n-k)!}) p^{k}q^{n-k}$ 是等價的
+
+而且 $\Sigma_{k=0}^{n} (\frac{n!}{(k)!(n-k)!}) p^{k}q^{n-k}$ 就是 1：$\Sigma_{k=0}^{n} C_k^n p^{k}q^{n-k} = (p+q)^n = 1$ 
+
+因此 $E(x) = np$
+ 
+#### [WIP] 證明 $Var(X) = npq$ 
+ 
+### [WIP] Poisson Distribution 
+
+### [WIP] Normal Distribution 
+ 
+

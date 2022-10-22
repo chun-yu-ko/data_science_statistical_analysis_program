@@ -15,3 +15,8 @@ This is a repo contain the note of "Statistical Analysis" course, which is the d
  3. [03 - Probability Theory](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20220930_Probability_Theory.html)
 
  4. [04 - Probability distribution](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221007_Probability_distribution.html)
+ 
+ 5. [05 - SAS EG](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221014_SAS_EG.html)
+
+ 6. [06 - Probability distribution](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221021_Probability_distribution.html)
+ 
