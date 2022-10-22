@@ -20,8 +20,8 @@ output:
 
 ### Proccessing
 
-![](20221014_SAS_EG_01.png)
+![](./20221014_SAS_EG_01.png)
 
 ### Chart
 
-![](20221014_SAS_EG_02.png)
+![](./20221014_SAS_EG_02.png)
