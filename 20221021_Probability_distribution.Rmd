@@ -58,7 +58,16 @@ library(colorspace)
  
  - 嘗試 `round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))) / 100000,4)`
 
-    - `r round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))) / 100000,4)`
+```{r, echo=F, warning=F, message=F}
+sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))%>%
+  table()%>%
+  data.frame()%>%
+  setNames(c("X", "Freq"))%>%
+  mutate(`Freq %` = scales::percent((Freq / 100000), .01),
+         Freq = scales::comma(Freq, 1))%>%
+  kable(align = "r")%>%
+  kable_styling(full_width = F)
+```
  
 當 X = 1 時：
 
@@ -72,9 +81,18 @@ library(colorspace)
  
     - $(0.5)^{9}$ 表示反面機率 0.5 抽到 9 次
 
- - 嘗試 `round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 10, size=1, prob=0.5)))) / 100000,6)`
+ - 嘗試 `round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 10, size=1, prob=0.5)))) / 100000,6)%>%kable%>%kable_styling`
 
-    - `r round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 10, size=1, prob=0.5)))) / 100000, 6)`
+```{r, echo=F, warning=F, message=F}
+sapply(X = 1:100000, function(x)sum(rbinom(n = 10, size=1, prob=0.5)))%>%
+  table()%>%
+  data.frame()%>%
+  setNames(c("X", "Freq"))%>%
+  mutate(`Freq %` = scales::percent((Freq / 100000), .01),
+         Freq = scales::comma(Freq, 1))%>%
+  kable(align = "r")%>%
+  kable_styling(full_width = F)
+```
 
 #### 證明 $E(X) = np$
 
@@ -107,9 +125,63 @@ $E(x) = np \Sigma_{k=0}^{n} (\frac{n-1!}{(k-1)!(n-k)!}) p^{k-1}q^{n-k}$
 因此 $E(x) = np$
  
 #### [WIP] 證明 $Var(X) = npq$ 
- 
-### [WIP] Poisson Distribution 
 
-### [WIP] Normal Distribution 
+變異數是 X 減去 X 的平均值 $\mu$，也就是 $Var(X) = E(X - \mu)$
+
+也可以[表達](https://zh.wikipedia.org/zh-tw/%E6%96%B9%E5%B7%AE)為：
+
+X 平方的期望值減去 X 期望值的平方：$Var(X) = E(X^2) - E(X)^2$
+
+因此在二項分配的情就就變成：
+
+$Var(X) = \Sigma_{k=0}^{n} k^2C_k^np^kq^{n-k} - n^2p^2$
+
+因為 $C_k^n = \frac{n!}{(k!)(n-k)!}$，為了把 $k!$ 消去一部分，所以把 $k^2$ 寫成 $k^2 = (k \cdot (k - 1) + k)$，故：
+
+$Var(X) = \Sigma_{k=0}^{n} (k \cdot (k - 1) + k)C_k^np^kq^{n-k} - n^2p^2$
+
+如果展開 $(k \cdot (k - 1) + k)C_k^n = k(k-1)(k \cdot (k - 1) + k)C_k^n + kC_k^n$
+
+因為後項 $kC_k^n$ 就是期望值 $kC_k^n = E(X) = np$，所以可以寫成：
+
+$Var(X) = \Sigma_{k=0}^{n} (k \cdot (k - 1))C_k^np^kq^{n-k} + np - n^2p^2$
+
+再把 $(k \cdot (k - 1))C_k$ 展開
+
+$Var(X) = \Sigma_{k=0}^{n} (k(k-1)\frac{n!}{(k)!(n-k)!}p^kq^{n-k} + np - n^2p^2$
+
+又可以把 $(k(k-1)$ 跟 $k!$ 相消變成
+
+$Var(X) = \Sigma_{k=0}^{n} frac{n!}{(k-2)!(n-k)!}p^kq^{n-k} + np - n^2p^2$
+
+重複期望值算法中的方法，把 $let k = k - 2$、$let n =nk - 2$，則：
+
+$Var(X) = n(n-1)p^2 \Sigma_{k=2}^{n}\frac{(n-2)!}{(k-2)!(n-k)!}p^{k-2}q^{n-k} + np - n^2p^2$
+
+所以又把複雜的部分變成 1 了：$\Sigma_{k=2}^{n}\frac{(n-2)!}{(k-2)!(n-k)!}p^{k-2}q^{n-k} = 1$
+
+$Var(X) = n(n-1)p^2 + np - n^2p^2$
+
+展開
+
+$Var(X) = n^2p^2-np^2 + np - n^2p^2$
+
+消除 $n^2p^2$ 後提出 np 變成：
+
+$Var(X) = np(1-p)$
+
+因為 $q = 1 - q$，所以
+
+$Var(X) = npq$
  
+### Summary table for distribution
+
+|Distribution|Mean|SD|
+|------------|----|--|
+|binomial|$np$|$\sqrt{npq}$|
+|poisson|$\lambda$|$\sqrt{\lambda}$|
+|normal|$\mu$|$\sigma$|
+|standard normal|$0$|$1$|
+
+standard normal 為定義一新的數 z ，$z = \frac {x-\mu}{\sigma}$
 
