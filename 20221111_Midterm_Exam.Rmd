@@ -1,0 +1,354 @@
+---
+title: "2022-11-11 期中報告"
+author: "Chun Yu, Ko"
+date: "2022-11-11"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
+    number_sections: true
+---
+
+[Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
+
+```{r, warning=F, message=F}
+
+library(dplyr)
+library(data.table)
+
+library(stringr)
+library(scales)
+
+library(ggplot2)
+library(ggthemes)
+library(ggrepel)
+
+library(plotly)
+
+library(colorspace)
+
+library(kableExtra)
+
+options(scipen = 999)
+Sys.setlocale("LC_TIME", "C")
+showtext::showtext.auto(enable = TRUE)
+showtext::showtext_opts(dpi = 300)
+```
+
+# 某基金會針對行政院推動的三倍券進行民調，其中一項結果如下圖。
+
+## 關於這張圖的呈現，請問您覺得是否合適？請寫出您認為合適或不合適的理由
+
+ - 不適合，看不太出來人群中意象的佔比，折線圖比較適合表達趨勢
+
+## 您會如何呈現此結果？請利用題目的數據重新繪製 
+
+```{r, warning=F, message=F}
+
+data_1 = data.frame(fill = c(1:5, NA),
+                    x = c(.14, .172, .2, .242, .418, 0.04))%>%
+  mutate(fill = fill%>%factor(., 1:5, c("一點也不同意", "不太同意", "沒意見", "還算同意", "非常同意"))%>%forcats::fct_rev(),
+         label = paste(fill, "\n", x%>%percent(), "\nn = ", (x*1074)%>%round, sep = ""))
+
+data_1%>%
+  filter(!is.na(fill))%>%
+  ggplot(aes(x = x, y = "", fill = fill, label = label))+
+  geom_col(position = position_stack(), width = .4, color = "white")+
+  geom_text(position = position_stack(vjust = .5))+
+  labs(title = "同不同意\n「行政院的振興三倍券太繁雜，不如直接發現金。」？")+
+  scale_x_continuous()+
+  scale_fill_discrete_diverging("Blue Red2", rev = F)+
+  theme_fivethirtyeight(base_family = "wqy-microhei")+
+  theme(legend.position = "none",
+        legend.title = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_blank())
+
+```
+
+# 假設在某族群有接受流感疫苗接種的比例佔七成，打過疫苗的人後來得流感的機率為 0.1，沒打過流感疫苗的人得流感的機率為 0.4，請回答下列問題：
+
+```{r, warning=F, message=F}
+data_2 = data.frame(group = c("是", "否"),
+                    prop = c(.7, 1-.7),
+                    dz = c(.1, .4))%>%
+  mutate(non_dz = 1-dz)%>%
+  mutate_at(.vars = c("dz", "non_dz"), ~prop * .)
+```
+
+## 請製作列聯表 (contingency table)。
+
+```{r, warning=F, message=F}
+rbind(data_2,
+      data_2%>%
+        mutate(group = "總計")%>%
+        group_by(group)%>%
+        summarise_all(sum))%>%
+  select(1,3,4,2)%>%
+  mutate_if(is.numeric, ~percent(., 1))%>%
+  kable(col.names = c("疫苗施打", "是", "否", "總計"),
+        align = "crrr")%>%
+  kable_styling(full_width = F)%>%
+  add_header_above(c(" "=1, "得流感"=3))
+
+```
+
+## 從此族群隨機挑選一群流感病人，請問曾接種疫苗的比例是多少 (請利用條件機率的概念說明，要寫下公式及計算過程)？
+
+$P(V_{true}) = 0.7$
+
+$P(V_{false}) = 0.3$
+
+$P(I_{true} | V_{true}) = 0.1$
+
+$P(I_{true} | V_{false}) = 0.4$
+
+$P(I_{true}) = P(I_{true} | V_{true}) \times P(V_{true}) + P(I_{true} | V_{false}) \times P(V_{false}) = 0.7 \times 0.1 + 0.3 \times 0.4 = 0.19$
+
+$P(V_{true}|I_{true}) = \frac{P(I_{true}) \cap P(V_{true})}{P(I_{true})} = \frac{P(I_{true}|V_{true}) \times P(V_{true})}{P(I_{true})} = \frac{0.1\times0.7}{0.19} = 0.368$
+
+## 請問接種流感疫苗與罹患流感是否相關？
+
+ - 施打者染疫機率：$P(I_{true} | V_{true}) = 0.1$
+ 
+ - 未施打者染疫機率：$P(I_{false} | V_{true}) = 0.4$
+ 
+ 故，兩族群染疫機率的
+ 
+ - rate difference：$0.1 - 0.4 = -0.3$
+ 
+ - rate ratio：$0.1 / 0.4 = 0.25$
+ 
+ 因 rate difference < 0、rate ratio < 1，故猜測施打疫苗對染疫有保護效果（負相關）
+
+# 某校學生會向學校提出某個建議，並針對大學部學生、研究所學生、及教職員進行調查，結果如表，請計算以下機率。
+
+```{r, warning=F, message=F}
+data_3 = data.frame(v = c("反對改變", "贊成改變"),
+                    s_b = c(73,27),
+                    s_m = c(27,23),
+                    t = c(20,30))
+data_3%>%
+  kable(col.names = c("意向", "大學生", "研究生", "教師"))%>%
+  kable_styling(full_width = F)
+```
+
+## 同意改變的大學生之機率: 
+
+$P(贊成改變|大學生) = 27 / (27 + 73) = 27 / 100 = 0.27$
+ 
+## 校園中隨機找一位研究生，他/她贊成的機率: $P(贊成改變|研究生) = 23 / (23 + 27) = 23 / 50 = 0.46$
+ 
+## 贊成改變或大學生的機率
+
+$P(贊成改變) \cup P(大學生) = \frac{(73 + 27) + (23 + 30)}{(73 + 27 + 20 + 27 + 23 + 30)} = \frac{153}{200} = 0.765$
+ 
+## 找任何一位學生，其反對學生會提議的機率
+$P(反對改變|學生) = \frac{73+27}{27+23+73+27} = \frac{100}{150} = 0.667$
+ 
+## 請列出各身分別的反對率
+大學生: $\frac{73}{73+27} = 0.73$、研究生: $\frac{27}{27+23} = 0.54$、教師: $\frac{20}{20+30} = 0.4$
+ 
+## 請問在校身分與是否贊同學生會提議是否相關
+
+若無相關則各族群反對率應一致；但大學生與研究生反對率高、教師反對率低，故猜測有相關
+ 
+# 請參考”期中報告.xlsx”檔案中”data”工作表的檔案，請問：
+
+```{r, warning=F, message=F}
+data_4 = data.frame(time = c(2.1, 14.7, 4.1, 14.1, 1.6, 
+                             4.4, 9.6, 18.4, 1, 3.5, 
+                             2.7, 16.7, 0.2, 2.4, 11.4, 
+                             32.3, 7.4, 6.1, 2.4, 18, 
+                             9.9, 8.2, 13.5, 18, 26.7, 
+                             9, 19.2, 7.4, 8.7, 3.7,
+                             2, 6.9, 0.2, 24, 12.6,
+                             6.6, 4.3, 8.3, 1.4, 23.1, 
+                             3.9, 3.3, 0.3, 8.2, 5.6, 
+                             1.6, 1.2, 1.3, 5.8, 0.4))
+```
+
+## 請利用適當的描述統計指標，說明這個欄位。
+
+```{r, warning=F, message=F}
+data_4%>%
+  summarise(sample = n(),
+            mean = time%>%mean(),
+            sd = time%>%mean(),
+            log_mean = time%>%log%>%mean(),
+            log_sd = time%>%log%>%sd(),
+            q1 =time%>%quantile(., probs = .25),
+            q2 =time%>%quantile(., probs = .50),
+            q3 =time%>%quantile(., probs = .75))%>%
+  ungroup%>%
+  mutate_all(~comma(.,0.01))%>%
+  kable(align = "r",
+        col.names = c("樣本數", "平均值", "標準差", "Log 平均值", "Log 標準差", "25th 分位", "50th 百分位", "75th 百分位"))%>%
+  kable_styling(full_width = F)
+```
+
+## 此變項呈現什麼樣的分布形狀 (左偏、右偏、對稱)，請用適當的圖與文字說明您的理由？
+
+右偏，分佈右側的尾部比左側的長，絕大多數的數值與中位數位於平均值的左側
+
+## 請利用 Empirical rule 推測資料的最大值跟最小值分別是多少 (推測即可，不一定要精確)？
+
+ - log 平均值: $1.58$
+ 
+ - log 標準差: $1.25$
+ 
+ - 兩個標準差是: $2 \times 1.25 = 2.5$
+ 
+ - 所以 95% 的數據應該落在: $[exp^{1.58 - 2.5}, exp^{1.58 + 2.5}] = [0.399 - 59.15]$
+ 
+ - 故猜測最小值: 0.399、最大值: 59.15
+
+## 承(2)，請問此資料是否適用 Empirical rule，為什麼？
+
+ - 這是有偏度的數據，而且時間應 >0，故直接用平均值、標準差算不行，取 log 後的則可以
+
+## 請根據此結果繪製直方圖 (Histogram) 與盒形圖 (Box plot)。
+
+```{r, warning=F, message=F}
+data_4%>%
+  ggplot(aes(time))+
+  geom_histogram()+
+  geom_vline(xintercept = c(8.37), linetype = 1, color = "red")+
+  geom_vline(xintercept = c(6.35), linetype = 2, color = "orange")+
+  geom_text(aes(x = 8.37+1.5, y = 6, label = "平均值"), color = "red")+
+  geom_text(aes(x = 6.35-1.5, y = 5, label = "中位數"), color = "orange")+
+  theme_fivethirtyeight()
+
+data_4%>%
+  ggplot(aes(time))+
+  geom_boxplot()+
+  scale_y_continuous(limits = c(-1.5,1.5))+
+  theme_fivethirtyeight()+
+  theme(axis.text.y = element_blank())
+```
+
+# Mini Project  
+
+```
+請參考”期中報告.xlsx”檔案中” ATM Data”工作表，這是某家銀行在三個地方ATM的交易狀況  (Location)，這三個地方在同一個行政區，假設這三台ATM沒有提款或存款上限。現收集連續30天的資料  (Date: 1-30)，並記錄交易類型  (Type: 提款Withdrawal、存款  Deposit、轉帳  Transfer)、交易日期  (Weekday, DayCode)、交易時間(Hour: 0=凌晨12點、1=凌晨1點、...、23=晚上11點)、交易金額  (Amount，單位是新台幣)。
+```
+
+```{r, warning=F, message=F}
+data_5 = "20221111_midterm_exam_atm_data.csv"%>%fread
+```
+
+```{r, warning=F, message=F}
+data_5%>%
+  group_by(Location, Type)%>%
+  summarise(sample = n(),
+            sum = Amount%>%sum,
+            mean = Amount%>%mean(),
+            q1 = Amount%>%quantile(., probs = .25),
+            q2 = Amount%>%quantile(., probs = .50),
+            q3 = Amount%>%quantile(., probs = .75))%>%
+  mutate_if(is.numeric, ~comma(., 1))%>%
+  kable(col.names = c("位置", "交易", "次數", "總計", "平均值", "25 th", "50 th", "75 th"),
+        align = "ccrrrrrr")%>%
+  collapse_rows(c(1,2))%>%
+  add_header_above(c(" "= 3, "金額" = 5))%>%
+  kable_styling(full_width = T, c("hover", "condensed", "striped"))
+```
+```{r, warning=F, message=F}
+data_5%>%
+  group_by(Location, Date, Hour)%>%
+  summarise( n =n(),
+             sum = Amount%>%sum)%>%
+  ggplot(aes(x = Hour, y = n, color = Date%>%factor, size = sum))+
+  geom_point(alpha = .3)+
+  geom_smooth(se = F, size = .5, color = "red", linetype = 2)+
+  labs(x = "Hour", "Times")+
+  facet_wrap(~Location, ncol = 3)+
+  scale_size(label = comma_format(1))+
+  guides(color = F)+
+  labs(size = "Amount")+
+  theme_fivethirtyeight()+
+  theme(legend.position = "bottom")
+```
+```{r, warning=F, message=F}
+data_5%>%
+  group_by(Location, Weekday, Hour)%>%
+  summarise( n =n(),
+             sum = Amount%>%sum)%>%
+  ggplot(aes(x = Hour, y = n, color = Weekday%>%factor, size = sum))+
+  geom_point(alpha = .3)+
+  geom_smooth(se = F, size = .5, linetype = 2)+
+  facet_wrap(~Location, ncol = 3)+
+  scale_size(label = comma_format(1))+
+  labs(color = "DOW", size = "Amount")+
+  theme_fivethirtyeight()+
+  theme(legend.position = "bottom")
+```
+```{r, warning=F, message=F}
+data_5%>%
+  mutate(cashflow = ifelse(Type == "Deposit", Amount, ifelse(Type == "Withdrawal", -Amount, 0)),
+         datehour = ("2022-01-01"%>%as.Date()+Date-1)%>%format(., paste("%Y-%m-%d ", sprintf("%02d", Hour), ":00:00", sep =""))%>%as.POSIXct())%>%
+  group_by(Location, datehour, Weekday)%>%
+  mutate(cashflow = cashflow%>%sum)%>%
+  ungroup%>%
+  arrange(Location, datehour)%>%
+  group_by(Location)%>%
+  mutate(cashflow = cashflow%>%cumsum)%>%
+  ggplot(aes(datehour, cashflow))+
+  geom_line()+
+  facet_wrap(~Location, scale = "free_y", ncol = 1)+
+  scale_y_continuous(labels = comma_format(1))+
+  labs(x = "日期時間", y = "存提差")+
+  theme_fivethirtyeight(base_family = "wqy-microhei")+
+  theme(axis.title = element_text())
+```
+## 現在該銀行想要擬定一份現金運送的計畫，該計畫需要說明運送時間與頻率、應準備的金額等，除此之外，您亦可視情況補充計畫內容。請草擬一份計畫書構想，可以用簡單文字或是圖表說明您的想法。
+
+ - 條件一：提款機可以放 5 至 8 百萬，也就是存提差接近 5 百萬後會滿、接近 -5 百萬會空，所以應在存提差絕對值 < 500 內運送一次
+ 
+ - 條件二：運送時間即為一班上班時間週一至週五 09 - 15 間
+ 
+ - 條件三：應避開存轉提尖峰時段
+ 
+ - 條件四：運鈔車沒有現金上限
+ 
+基於上述，可以利用歷史個站點的存提差模擬 MC 出更多數據，並配合 LP 求最佳
+ 
+## 部門主管在詢問目前三個ATM是否足夠，是否有必要設新的ATM，如果有必要，地點選在哪裡比較好？
+
+存提差以及存轉提次數太多可能是負擔，就存提差來說是 DriveUp 最大，Campus B 次數最多；但 Campus B 存轉提次數尖離峰差大，DriveUp 小，表示 DriveUp 可能比較有 throuput 問題，故選 DriveUp 附近設置新 ATM
+
+## 假設 Campus A 的ATM提款金額呈現常態分佈，請問提款金額低於5000元的機率是多少？另外請計算資料中提款金額低於5000元的百分比，並比較兩個結果是否相同，如果不相同，請說明可能是什麼原因？
+
+不同，假設為常態分佈提款金額可能 <0 不符合邏輯，也不會發生
+
+```{r, warning=F, message=F}
+data_5%>%
+  filter(Type == "Withdrawal",
+         Location == "CampusA")%>%
+  summarise(mean = Amount%>%mean,
+            sd = Amount%>%mean,
+            p_less_than_5k = pnorm(5000, mean, sd),
+            less_than_5k = sum(Amount<5000)/n())%>%
+  mutate_at(.vars = c("mean", "sd"), ~comma(.,1))%>%
+  mutate_at(.vars = c("p_less_than_5k", "less_than_5k"), ~percent(.,.01))%>%
+  kable(col.names = c("平均值", "標準差", "推估<5K 機率", "實際 <5K 比例"))%>%
+  kable_styling(full_width = F)
+```
+ 
+```{r, warning=F, message=F}
+data_5%>%
+  filter(Type == "Withdrawal",
+         Location == "CampusA")%>%
+  ggplot(aes(Amount))+
+  geom_histogram()+
+  labs(x = "金額", y = "次數")+
+  scale_x_continuous(labels = comma_format(1))+
+  theme_fivethirtyeight(base_family = "wqy-microhei")+
+  theme(axis.title = element_text())
+```
+
+

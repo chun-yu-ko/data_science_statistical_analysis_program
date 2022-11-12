@@ -38,7 +38,7 @@ library(colorspace)
 
 實驗 n 次，每次成功機率為 p ，失敗機率為 q ，$1 = p + p$
 
-設 X 為成功次數，則機率分配函數 $P(X = x) =C_x^n p^x q^{n-x} $
+設 X 為成功次數，則機率分配函數 $ P(X = x) =C_x^n p^x q^{n-x} $
 
  - 期望值 $E(X) = np$
 
@@ -56,7 +56,11 @@ library(colorspace)
  
     - $(0.5)^{4}$ 表示反面機率 0.5 抽到 4 次
  
- - 嘗試 `round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))) / 100000,4)`
+嘗試:
+ 
+```
+round(table(sapply(X = 1:100000, function(x) sum(rbinom(n = 4, size = 1, prob = 0.5)))) / 100000, 4)
+```
 
 ```{r, echo=F, warning=F, message=F}
 sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))%>%
@@ -71,7 +75,7 @@ sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))%>%
  
 當 X = 1 時：
 
- - $P(X = 1) =C_1^n p^1 q^{n-1} $
+ - $P(X = 1) =C_1^n p^1 q^{n-1}$
  
  - 若投擲 10 次正面機率為 0.5 的硬幣則：$P(X = 1) = C_{1}^{10} (0.5)^1 (0.5)^{9} = 10 \cdot 0.5 \cdot 0.001953125 = 0.009765625$
  
@@ -81,7 +85,12 @@ sapply(X = 1:100000, function(x)sum(rbinom(n = 4, size=1, prob=0.5)))%>%
  
     - $(0.5)^{9}$ 表示反面機率 0.5 抽到 9 次
 
- - 嘗試 `round(table(sapply(X = 1:100000, function(x)sum(rbinom(n = 10, size=1, prob=0.5)))) / 100000,6)%>%kable%>%kable_styling`
+嘗試:
+ 
+```
+round(table(sapply(X = 1:100000, function(x) sum(rbinom(n = 10, size = 1, prob = 0.5)))) / 100000, 6)
+```
+
 
 ```{r, echo=F, warning=F, message=F}
 sapply(X = 1:100000, function(x)sum(rbinom(n = 10, size=1, prob=0.5)))%>%
@@ -173,15 +182,3 @@ $Var(X) = np(1-p)$
 因為 $q = 1 - q$，所以
 
 $Var(X) = npq$
- 
-### Summary table for distribution
-
-|Distribution|Mean|SD|
-|------------|----|--|
-|binomial|$np$|$\sqrt{npq}$|
-|poisson|$\lambda$|$\sqrt{\lambda}$|
-|normal|$\mu$|$\sigma$|
-|standard normal|$0$|$1$|
-
-standard normal 為定義一新的數 z ，$z = \frac {x-\mu}{\sigma}$
-
