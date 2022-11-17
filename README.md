@@ -22,9 +22,9 @@ This is a repo contain the note of "Statistical Analysis" course, which is the d
 
  6. [06 - Probability distribution](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221021_Probability_distribution.html)
  
- 7. [07 - Probability distribution]()
+ 7. [07 - Probability distribution](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221028_Probability_distribution.html)
  
- 8. [08 - Probability distribution]()
+ 8. [08 - Probability distribution](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221104_Probability_distribution.html)
  
  9. [09 - Midterm Exam]()
 

@@ -1,5 +1,5 @@
 ---
-title: "06 - Probability distribution"
+title: "07 - Probability distribution"
 author: "Chun Yu, Ko"
 date: "2022-10-21"
 output:
