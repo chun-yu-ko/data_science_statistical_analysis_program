@@ -57,9 +57,9 @@ data_1%>%
   filter(!is.na(fill))%>%
   ggplot(aes(x = x, y = "", fill = fill, label = label))+
   geom_col(position = position_stack(), width = .4, color = "white")+
-  geom_text(position = position_stack(vjust = .5))+
+  geom_text_repel(position = position_stack(vjust = .5), min.segment.length = 0)+
   labs(title = "同不同意\n「行政院的振興三倍券太繁雜，不如直接發現金。」？")+
-  scale_x_continuous()+
+  coord_polar()+
   scale_fill_discrete_diverging("Blue Red2", rev = F)+
   theme_fivethirtyeight(base_family = "wqy-microhei")+
   theme(legend.position = "none",
