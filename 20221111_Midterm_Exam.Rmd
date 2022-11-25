@@ -3,10 +3,11 @@ title: "10 - Midterm exam"
 author: "11773028	葛俊余 11773035 簡柏宇 11773040	余俊宏"
 date: "2022-11-11"
 output:
-  prettydoc::html_pretty:
-    theme: leonids
-    highlight: github
+  html_document:
     toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
     toc_depth: 2
     number_sections: true
 ---
@@ -224,7 +225,14 @@ data_4%>%
   geom_vline(xintercept = c(8.37), linetype = 1, color = "red")+
   geom_vline(xintercept = c(6.35), linetype = 2, color = "orange")+
   geom_text(aes(x = 8.37+1.5, y = 6, label = "平均值"), color = "red")+
-  geom_text(aes(x = 6.35-1.5, y = 5, label = "中位數"), color = "orange")
+  geom_text(aes(x = 6.35-1.5, y = 5, label = "中位數"), color = "orange")+
+  labs(x = "時間", y = "次數")+
+  theme_light()+
+  theme(legend.position = "none",
+        legend.title = element_blank(),
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank())
 
 data_4%>%
   ggplot(aes(time))+
@@ -377,7 +385,14 @@ data_5%>%
   labs(x = "金額", y = "次數")+
   scale_x_continuous(labels = comma_format(1))+
   theme_fivethirtyeight(base_family = "wqy-microhei")+
-  theme(axis.title = element_text())
+  theme_light()+
+  theme(legend.position = "none",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text = element_text(color = "gray20"),
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank())
 ```
 
 
