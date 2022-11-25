@@ -1,5 +1,5 @@
 ---
-title: "08 - Hypothesis testing"
+title: "11 - Hypothesis testing"
 author: "Chun Yu, Ko"
 date: "2022-11-18"
 output:
@@ -31,15 +31,21 @@ library(colorspace)
 
 則發生事件 x 的比例（百分比），可以記錄為：
 
-$ p = \frac{x}{n} = \frac{number of success}{sample size}$
-
-$ z_{cal} = \frac{p - \pi_0}{\sigma_p} = $
+$p = \frac{x}{n} = \frac{number of success}{sample size}$
 
 # 檢定統計量
 
 ## Z 檢定 Known variance
 
+單一樣本檢定 已知 $\sigma$ 檢定統計量
+
+$z = \frac{\overline{x} - \mu_0}{\sigma_{\overline{x}}} = \frac{\overline{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}}$
+
 ## 兩個獨立樣本 T 檢定 Two sample T test Unknown variancebut assume equal
+
+單一樣本檢定 - 未知 $ \sigma $ 檢定統計量 
+
+$t = \frac{\overline{x} - \mu_0}{\frac{s}{\sqrt{n}}}$
 
 變異數同質
 
@@ -102,10 +108,4 @@ t.test(dat_price_1, dat_price_2, alternative = "two.side", var.equal = TRUE)
 ```{r, echo=F, warning=F, message=F}
 var.test(dat_price_1, dat_price_2)
 ```
-
-
-
-
-
-## Unknown variancebut assume not equal
 

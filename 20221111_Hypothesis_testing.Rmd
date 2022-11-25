@@ -1,0 +1,60 @@
+---
+title: "10 - Hypothesis testing"
+author: "Chun Yu, Ko"
+date: "2022-11-18"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
+    number_sections: true
+---
+
+[Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
+
+# Key point
+
+```{r, echo=F, warning=F, message=F}
+library(dplyr)
+library(data.table)
+library(kableExtra)
+library(ggplot2)
+library(ggthemes)
+library(colorspace)
+```
+
+## Hypothesis testing
+
+### 寫出假說
+
+  - 虛無假說 Null hypothesis $H_0$: 希望被否定、放棄的假設
+  
+  - 對立假說 Alternative hypothesis $H_1$: 希望成立的假設
+  
+### 設定決策的規則
+
+  - 用 p value
+  
+  - 用 confident interval
+  
+#### 錯誤決策的可能
+
+  - Type 1 error: 偽陽性 false positive，錯誤地拒絕原假設，$H_0$ 是對的但被拒絕，通常是 0.05
+  
+  - Type 2 error: 偽陰性 false negative，錯誤地未能拒絕原假設，$H_0$ 是錯的但沒有被拒絕
+ 
+### 從母體取得樣本
+  
+### 計算檢定統計量
+
+單一樣本檢定 已知 $\sigma$ 檢定統計量
+
+$z = \frac{\overline{x} - \mu_0}{\sigma_{\overline{x}}} = \frac{\overline{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}}$
+  
+單一樣本檢定 - 未知 $ \sigma $ 檢定統計量 
+
+$t = \frac{\overline{x} - \mu_0}{\frac{s}{\sqrt{n}}}$
+
+### 結論
