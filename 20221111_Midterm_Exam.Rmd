@@ -1,5 +1,5 @@
 ---
-title: "2022-11-11 期中報告"
+title: "10 - Midterm exam"
 author: "Chun Yu, Ko"
 date: "2022-11-11"
 output:

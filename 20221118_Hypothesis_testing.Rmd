@@ -1,5 +1,5 @@
 ---
-title: "11 - Hypothesis testing"
+title: "12 - Hypothesis testing"
 author: "Chun Yu, Ko"
 date: "2022-11-18"
 output:
