@@ -26,16 +26,83 @@ library(ggthemes)
 library(colorspace)
 ```
 
-# Analysis of variance
+# Single Factor Analysis of variance 單因子變異數分析
 
- - 比較三組或三組以上的平均值
+```{r, echo=F, warning=F, message=F}
+data.frame(color = c(rep("A", 1000), rep("B", 1000), rep("C", 1000)),
+           x = c(rnorm(1000,3,2),
+                 rnorm(1000,4,2),
+                 rnorm(1000,5,2)))%>%
+  ggplot(aes(x = x, color = color))+
+  geom_density()+
+  scale_y_continuous(labels = scales::percent_format())+
+  theme_fivethirtyeight()+
+  theme(legend.title = element_blank())
+```
+
+## ANOVA 的思想
+
+當有三個或以上的組別時，想要知道這幾個組別的數值長相是不是一致
+
+故可以看：組別跟組別之間的差異大不大 vs 不管組別的所有數值的差異大不大
+
+也就是在看：組間變異 (Between-group variance)  vs 組內變異 (Within-group variance)
+
+## F 檢定統計量
+
+為了比較組間、組內差異，所以把兩個平均變異相除成為 F 值（F 是費雪 Fishers）
+
+$F=\frac{平均組間變異 MSB}{平均組變異異 MSE}=\frac{(\frac{組間變異 SSB}{c-1})}{(\frac{組內變異 SSE}{n-c})}$
+
+當平均組間變異 > 平均組內差異，則 $F > 1$，代表不同組別間的差異比組內的差異大，就是不同組別比較離散，也就是不同組別可有沒差異
+
+當平均組間變異 < 平均組內差異，則 $F < 1$，代表不同組別間的差異比組內的差異小，就是不同組別比較集中，也就是不同組別可能沒差異
+
+總變異 Total $SST = SSB + SSE = \sum_{j=1}^{c}\sum_{i=1}^{n_j}(y_{ij}-\overline{y})^2$
+
+組間變異 Treatment $SSB = \sum_{j=1}^{c}n_j(\overline{y}_j - \overline{y})^2$，就是各組平均值減去所有數值的平均
+
+如果只有 3 組進行比較，計算組間變異時就是有 3 個樣本，因為用一個樣本為基準進行比較，所以 c-1 為自由度
+
+組內變異 Error $SSE = \sum_{j=1}^{c}\sum_{i=1}^{n_j}(y_{ij}-\overline{y}_j)^2$，遍歷每一個組別計算該組別數值減去該組別平均
+
+如果有三組，那就是從第一組開始算 $y - \overline{y}$、一直算到第三組，因為三組各有一個平均值當基準（共三個），所以 n-3 為自由度
+
+## 假設檢定
+
+  - 虛無假說：三個平均值均相等
  
- - 虛無假說：三個平均值均相等
- 
- - 對立假說：至少有兩個平均值不相等
- 
- - 檢驗組間變異 (Between-group variance) 組內變異 (Within-group variance)
- 
- - 組間變異是否大於組內變異、組間變異是否大於組內變異
- 
- - 變異為數值到平均的距離
+  - 對立假說：至少有兩個平均值不相等
+
+## 前提假設
+
+  - 獨立樣本
+  
+  - 常態分布
+  
+  - 變異數相等：比如有三組，就直接假設三組的變異數都是一樣的；因為變異數不相等會搞得很複雜
+
+# 事後檢定
+
+事後就是做完 ANOVA 之後才能做的，有很多種
+
+## Bonferroni correction
+
+概念就是想知道 A、B、C 三組間有沒有差
+
+本來 $p < 0.05$ 就算有差異
+
+但其實是做了 3 次比較： A vs B、A vs C、B vs C 因此要 $p<\frac{0.05}{3}$ 才算數
+
+但是會增加出現型二錯誤的機率
+
+## Tukey post hoc test
+
+變形後的 T 檢定，就是拿兩個組別來比 T test
+
+$T = \frac{|\overline{y}_i - \overline{y}_k|}{\sqrt{MSE[\frac{1}{n_j}+\frac{1}{n_k}]}}$
+
+
+
+
+
