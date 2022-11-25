@@ -1,17 +1,15 @@
 ---
 title: "10 - Midterm exam"
-author: "Chun Yu, Ko"
+author: "11773028	葛俊余 11773035 簡柏宇 11773040	余俊宏"
 date: "2022-11-11"
 output:
-  html_document:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
     toc: true
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
-    toc_depth: 3
+    toc_depth: 2
     number_sections: true
 ---
-
 [Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
 
 ```{r, warning=F, message=F}
@@ -38,7 +36,7 @@ showtext::showtext.auto(enable = TRUE)
 showtext::showtext_opts(dpi = 300)
 ```
 
-# 某基金會針對行政院推動的三倍券進行民調，其中一項結果如下圖。
+# 某基金會針對行政院推動的三倍券進行民調
 
 ## 關於這張圖的呈現，請問您覺得是否合適？請寫出您認為合適或不合適的理由
 
@@ -58,19 +56,22 @@ data_1%>%
   ggplot(aes(x = x, y = "", fill = fill, label = label))+
   geom_col(position = position_stack(), width = .4, color = "white")+
   geom_text_repel(position = position_stack(vjust = .5), min.segment.length = 0)+
-  labs(title = "同不同意\n「行政院的振興三倍券太繁雜，不如直接發現金。」？")+
+  labs(title = "同不同意「行政院的振興三倍券太繁雜，不如直接發現金。」？")+
   coord_polar()+
   scale_fill_discrete_diverging("Blue Red2", rev = F)+
-  theme_fivethirtyeight(base_family = "wqy-microhei")+
+  theme_light()+
   theme(legend.position = "none",
         legend.title = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_blank())
+        axis.title = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank(),
+        panel.grid = element_blank())
 
 ```
 
-# 假設在某族群有接受流感疫苗接種的比例佔七成，打過疫苗的人後來得流感的機率為 0.1，沒打過流感疫苗的人得流感的機率為 0.4，請回答下列問題：
+# 假設在某族群有接受流感疫苗接種的比例佔七成，打過疫苗的人後來得流感的機率為 0.1，沒打過流感疫苗的人得流感的機率為 0.4
 
 ```{r, warning=F, message=F}
 data_2 = data.frame(group = c("是", "否"),
@@ -94,7 +95,6 @@ rbind(data_2,
         align = "crrr")%>%
   kable_styling(full_width = F)%>%
   add_header_above(c(" "=1, "得流感"=3))
-
 ```
 
 ## 從此族群隨機挑選一群流感病人，請問曾接種疫苗的比例是多少 (請利用條件機率的概念說明，要寫下公式及計算過程)？
@@ -125,7 +125,7 @@ $P(V_{true}|I_{true}) = \frac{P(I_{true}) \cap P(V_{true})}{P(I_{true})} = \frac
  
  因 rate difference < 0、rate ratio < 1，故猜測施打疫苗對染疫有保護效果（負相關）
 
-# 某校學生會向學校提出某個建議，並針對大學部學生、研究所學生、及教職員進行調查，結果如表，請計算以下機率。
+# 某校學生會向學校提出某個建議，並針對大學部學生、研究所學生、及教職員進行調查
 
 ```{r, warning=F, message=F}
 data_3 = data.frame(v = c("反對改變", "贊成改變"),
@@ -141,23 +141,27 @@ data_3%>%
 
 $P(贊成改變|大學生) = 27 / (27 + 73) = 27 / 100 = 0.27$
  
-## 校園中隨機找一位研究生，他/她贊成的機率: $P(贊成改變|研究生) = 23 / (23 + 27) = 23 / 50 = 0.46$
+## 校園中隨機找一位研究生，他/她贊成的機率
+
+$P(贊成改變|研究生) = 23 / (23 + 27) = 23 / 50 = 0.46$
  
 ## 贊成改變或大學生的機率
 
 $P(贊成改變) \cup P(大學生) = \frac{(73 + 27) + (23 + 30)}{(73 + 27 + 20 + 27 + 23 + 30)} = \frac{153}{200} = 0.765$
  
 ## 找任何一位學生，其反對學生會提議的機率
+
 $P(反對改變|學生) = \frac{73+27}{27+23+73+27} = \frac{100}{150} = 0.667$
  
 ## 請列出各身分別的反對率
+
 大學生: $\frac{73}{73+27} = 0.73$、研究生: $\frac{27}{27+23} = 0.54$、教師: $\frac{20}{20+30} = 0.4$
  
 ## 請問在校身分與是否贊同學生會提議是否相關
 
 若無相關則各族群反對率應一致；但大學生與研究生反對率高、教師反對率低，故猜測有相關
  
-# 請參考”期中報告.xlsx”檔案中”data”工作表的檔案，請問：
+# 請參考期中報告.xlsx 檔案中 data 工作表的檔案
 
 ```{r, warning=F, message=F}
 data_4 = data.frame(time = c(2.1, 14.7, 4.1, 14.1, 1.6, 
@@ -220,15 +224,20 @@ data_4%>%
   geom_vline(xintercept = c(8.37), linetype = 1, color = "red")+
   geom_vline(xintercept = c(6.35), linetype = 2, color = "orange")+
   geom_text(aes(x = 8.37+1.5, y = 6, label = "平均值"), color = "red")+
-  geom_text(aes(x = 6.35-1.5, y = 5, label = "中位數"), color = "orange")+
-  theme_fivethirtyeight()
+  geom_text(aes(x = 6.35-1.5, y = 5, label = "中位數"), color = "orange")
 
 data_4%>%
   ggplot(aes(time))+
   geom_boxplot()+
   scale_y_continuous(limits = c(-1.5,1.5))+
-  theme_fivethirtyeight()+
-  theme(axis.text.y = element_blank())
+  theme_light()+
+  theme(legend.position = "none",
+        legend.title = element_blank(),
+        axis.title = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text.y = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank())
 ```
 
 # Mini Project  
@@ -259,34 +268,47 @@ data_5%>%
 ```
 ```{r, warning=F, message=F}
 data_5%>%
-  group_by(Location, Date, Hour)%>%
+  group_by(Type, Location, Date, Hour)%>%
   summarise( n =n(),
              sum = Amount%>%sum)%>%
   ggplot(aes(x = Hour, y = n, color = Date%>%factor, size = sum))+
   geom_point(alpha = .3)+
   geom_smooth(se = F, size = .5, color = "red", linetype = 2)+
   labs(x = "Hour", "Times")+
-  facet_wrap(~Location, ncol = 3)+
+  facet_wrap(Type~Location, ncol = 4, scales = "free")+
   scale_size(label = comma_format(1))+
   guides(color = F)+
-  labs(size = "Amount")+
-  theme_fivethirtyeight()+
-  theme(legend.position = "bottom")
+  labs(color = "時間", size = "金額", x = "時間", y = "次數")+
+  theme_light()+
+  theme(legend.position = "bottom",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "gray20"),
+        axis.title = element_blank(),
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank())
 ```
+
 ```{r, warning=F, message=F}
 data_5%>%
-  group_by(Location, Weekday, Hour)%>%
+  group_by(Type, Location, Weekday, Hour)%>%
   summarise( n =n(),
              sum = Amount%>%sum)%>%
   ggplot(aes(x = Hour, y = n, color = Weekday%>%factor, size = sum))+
   geom_point(alpha = .3)+
   geom_smooth(se = F, size = .5, linetype = 2)+
-  facet_wrap(~Location, ncol = 3)+
+  facet_wrap(Type~Location, ncol = 4, scales = "free")+
   scale_size(label = comma_format(1))+
-  labs(color = "DOW", size = "Amount")+
-  theme_fivethirtyeight()+
-  theme(legend.position = "bottom")
+  labs(color = "週次日期", size = "金額", x = "小時", y = "次數")+
+  theme_light()+
+  theme(legend.position = "bottom",
+        strip.background = element_blank(),
+        strip.text = element_text(color = "gray20"),
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank())
 ```
+
 ```{r, warning=F, message=F}
 data_5%>%
   mutate(cashflow = ifelse(Type == "Deposit", Amount, ifelse(Type == "Withdrawal", -Amount, 0)),
@@ -302,9 +324,16 @@ data_5%>%
   facet_wrap(~Location, scale = "free_y", ncol = 1)+
   scale_y_continuous(labels = comma_format(1))+
   labs(x = "日期時間", y = "存提差")+
-  theme_fivethirtyeight(base_family = "wqy-microhei")+
-  theme(axis.title = element_text())
+  theme_light()+
+  theme(legend.position = "none",
+        legend.title = element_blank(),
+        strip.background = element_blank(),
+        strip.text = element_text(color = "gray20"),
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank())
 ```
+
 ## 現在該銀行想要擬定一份現金運送的計畫，該計畫需要說明運送時間與頻率、應準備的金額等，除此之外，您亦可視情況補充計畫內容。請草擬一份計畫書構想，可以用簡單文字或是圖表說明您的想法。
 
  - 條件一：提款機可以放 5 至 8 百萬，也就是存提差接近 5 百萬後會滿、接近 -5 百萬會空，所以應在存提差絕對值 < 500 內運送一次
