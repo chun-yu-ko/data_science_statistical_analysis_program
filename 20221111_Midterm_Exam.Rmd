@@ -1,6 +1,6 @@
 ---
 title: "10 - Midterm exam"
-author: "第四組<br>11773028	葛俊余<br>11773035 簡柏宇<br>11773040	余俊宏<br>"
+author: "第四組<br>10773020 李庭溱<br>11773028 葛俊余<br>11773035 簡柏宇<br>11773040 余俊宏<br>"
 date: "2022-11-11"
 output:
   prettydoc::html_pretty:
@@ -11,7 +11,7 @@ output:
     number_sections: true
 ---
 
-```{r, warning=F, message=F}
+```{r, warning=F, message=F, }
 library(dplyr)
 library(data.table)
 library(stringr)
@@ -21,8 +21,6 @@ library(ggthemes)
 library(ggrepel)
 library(colorspace)
 library(kableExtra)
-# options(scipen = 999)
-# Sys.setlocale("LC_TIME", "C")
 showtext::showtext.auto(enable = TRUE)
 showtext::showtext_opts(dpi = 300)
 ```
@@ -37,55 +35,70 @@ showtext::showtext_opts(dpi = 300)
 
 ```{r, warning=F, message=F}
 
-data_1 = data.frame(fill = c(1:5, NA),
-                    x = c(.14, .172, .2, .242, .418, 0.04))%>%
-  mutate(fill = fill%>%factor(., 1:5, c("一點也不同意", "不太同意", "沒意見", "還算同意", "非常同意"))%>%forcats::fct_rev(),
-         label = paste(fill, "\n", x%>%percent(), "\nn = ", (x*1074)%>%round, sep = ""))
+data_1 <- data.frame(
+  fill = c(1:5, NA),
+  x = c(.14, .172, .2, .242, .418, 0.04)
+) %>%
+  mutate(
+    fill = fill %>%
+      factor(
+        .,
+        1:5,
+        c("一點也不同意", "不太同意", "沒意見", "還算同意", "非常同意")
+      ) %>% forcats::fct_rev(),
+    label = paste(fill, "\n", x %>% percent(), "\nn = ", (x * 1074) %>% round(), sep = "")
+  )
 
-data_1%>%
-  filter(!is.na(fill))%>%
-  ggplot(aes(x = x, y = "", fill = fill, label = label))+
-  geom_col(position = position_stack(), width = .4, color = "white")+
-  geom_text_repel(position = position_stack(vjust = .5), min.segment.length = 0)+
-  labs(title = "同不同意「行政院的振興三倍券太繁雜，不如直接發現金。」？")+
-  coord_polar()+
-  scale_fill_discrete_diverging("Blue Red2", rev = F)+
-  theme_light()+
-  theme(legend.position = "none",
-        legend.title = element_blank(),
-        axis.title = element_blank(),
-        axis.ticks = element_blank(),
-        axis.text = element_blank(),
-        panel.background = element_blank(),
-        panel.border = element_blank(),
-        panel.grid = element_blank())
-
+data_1 %>%
+  filter(!is.na(fill)) %>%
+  ggplot(aes(x = x, y = "", fill = fill, label = label)) +
+  geom_col(position = position_stack(), width = .4, color = "white") +
+  geom_text_repel(position = position_stack(vjust = .5), min.segment.length = 0) +
+  labs(title = "同不同意「行政院的振興三倍券太繁雜，不如直接發現金。」？") +
+  coord_polar() +
+  scale_fill_discrete_diverging("Blue Red2", rev = F) +
+  theme_light() +
+  theme(
+    legend.position = "none",
+    legend.title = element_blank(),
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_blank(),
+    panel.grid = element_blank()
+  )
 ```
 
 # 假設在某族群有接受流感疫苗接種的比例佔七成，打過疫苗的人後來得流感的機率為 0.1，沒打過流感疫苗的人得流感的機率為 0.4
 
-```{r, warning=F, message=F}
-data_2 = data.frame(group = c("是", "否"),
-                    prop = c(.7, 1-.7),
-                    dz = c(.1, .4))%>%
-  mutate(non_dz = 1-dz)%>%
-  mutate_at(.vars = c("dz", "non_dz"), ~prop * .)
-```
-
 ## 請製作列聯表
 
 ```{r, warning=F, message=F}
-rbind(data_2,
-      data_2%>%
-        mutate(group = "總計")%>%
-        group_by(group)%>%
-        summarise_all(sum))%>%
-  select(1,3,4,2)%>%
-  mutate_if(is.numeric, ~percent(., 1))%>%
-  kable(col.names = c("疫苗施打", "是", "否", "總計"),
-        align = "crrr")%>%
-  kable_styling(full_width = F)%>%
-  add_header_above(c(" "=1, "得流感"=3))
+
+data_2 <- data.frame(
+  group = c("是", "否"),
+  prop = c(.7, 1 - .7),
+  dz = c(.1, .4)
+) %>%
+  mutate(non_dz = 1 - dz) %>%
+  mutate_at(.vars = c("dz", "non_dz"), ~ prop * .)
+
+rbind(
+  data_2,
+  data_2 %>%
+    mutate(group = "總計") %>%
+    group_by(group) %>%
+    summarise_all(sum)
+) %>%
+  select(1, 3, 4, 2) %>%
+  mutate_if(is.numeric, ~ percent(., 1)) %>%
+  kable(
+    col.names = c("疫苗施打", "是", "否", "總計"),
+    align = "crrr"
+  ) %>%
+  kable_styling(full_width = F) %>%
+  add_header_above(c(" " = 1, "得流感" = 3))
 ```
 
 ## 從此族群隨機挑選一群流感病人，請問曾接種疫苗的比例是多少
@@ -118,17 +131,19 @@ $P(V_{true}|I_{true}) = \frac{P(I_{true}) \cap P(V_{true})}{P(I_{true})} = \frac
 
 # 某校學生會向學校提出某個建議，並針對大學部學生、研究所學生、及教職員進行調查
 
+## 同意改變的大學生之機率
+
 ```{r, warning=F, message=F}
-data_3 = data.frame(v = c("反對改變", "贊成改變"),
-                    s_b = c(73,27),
-                    s_m = c(27,23),
-                    t = c(20,30))
-data_3%>%
-  kable(col.names = c("意向", "大學生", "研究生", "教師"))%>%
+data_3 <- data.frame(
+  v = c("反對改變", "贊成改變"),
+  s_b = c(73, 27),
+  s_m = c(27, 23),
+  t = c(20, 30)
+)
+data_3 %>%
+  kable(col.names = c("意向", "大學生", "研究生", "教師")) %>%
   kable_styling(full_width = F)
 ```
-
-## 同意改變的大學生之機率
 
 $P(贊成改變|大學生) = 27 / (27 + 73) = 27 / 100 = 0.27$
  
@@ -154,35 +169,44 @@ $P(反對改變|學生) = \frac{73+27}{27+23+73+27} = \frac{100}{150} = 0.667$
  
 # 請參考期中報告.xlsx 檔案中 data 工作表的檔案
 
-```{r, warning=F, message=F}
-data_4 = data.frame(time = c(2.1, 14.7, 4.1, 14.1, 1.6, 
-                             4.4, 9.6, 18.4, 1, 3.5, 
-                             2.7, 16.7, 0.2, 2.4, 11.4, 
-                             32.3, 7.4, 6.1, 2.4, 18, 
-                             9.9, 8.2, 13.5, 18, 26.7, 
-                             9, 19.2, 7.4, 8.7, 3.7,
-                             2, 6.9, 0.2, 24, 12.6,
-                             6.6, 4.3, 8.3, 1.4, 23.1, 
-                             3.9, 3.3, 0.3, 8.2, 5.6, 
-                             1.6, 1.2, 1.3, 5.8, 0.4))
-```
-
 ## 請利用適當的描述統計指標，說明這個欄位
 
 ```{r, warning=F, message=F}
-data_4%>%
-  summarise(sample = n(),
-            mean = time%>%mean(),
-            sd = time%>%mean(),
-            log_mean = time%>%log%>%mean(),
-            log_sd = time%>%log%>%sd(),
-            q1 =time%>%quantile(., probs = .25),
-            q2 =time%>%quantile(., probs = .50),
-            q3 =time%>%quantile(., probs = .75))%>%
-  ungroup%>%
-  mutate_all(~comma(.,0.01))%>%
-  kable(align = "r",
-        col.names = c("樣本數", "平均值", "標準差", "Log 平均值", "Log 標準差", "25th 分位", "50th 百分位", "75th 百分位"))%>%
+
+data_4 <- data.frame(time = c(
+  2.1, 14.7, 4.1, 14.1, 1.6,
+  4.4, 9.6, 18.4, 1, 3.5,
+  2.7, 16.7, 0.2, 2.4, 11.4,
+  32.3, 7.4, 6.1, 2.4, 18,
+  9.9, 8.2, 13.5, 18, 26.7,
+  9, 19.2, 7.4, 8.7, 3.7,
+  2, 6.9, 0.2, 24, 12.6,
+  6.6, 4.3, 8.3, 1.4, 23.1,
+  3.9, 3.3, 0.3, 8.2, 5.6,
+  1.6, 1.2, 1.3, 5.8, 0.4
+))
+
+data_4 %>%
+  summarise(
+    sample = n(),
+    mean = time %>% mean(),
+    sd = time %>% mean(),
+    log_mean = time %>% log() %>% mean(),
+    log_sd = time %>% log() %>% sd(),
+    q1 = time %>% quantile(., probs = .25),
+    q2 = time %>% quantile(., probs = .50),
+    q3 = time %>% quantile(., probs = .75)
+  ) %>%
+  ungroup() %>%
+  mutate_all(~ comma(., 0.01)) %>%
+  kable(
+    align = "r",
+    col.names = c(
+      "樣本數", "平均值", "標準差",
+      "Log 平均值", "Log 標準差",
+      "25th 分位", "50th 百分位", "75th 百分位"
+    )
+  ) %>%
   kable_styling(full_width = F)
 ```
 
@@ -209,33 +233,37 @@ data_4%>%
 ## 請根據此結果繪製直方圖與盒形圖
 
 ```{r, warning=F, message=F}
-data_4%>%
-  ggplot(aes(time))+
-  geom_histogram()+
-  geom_vline(xintercept = c(8.37), linetype = 1, color = "red")+
-  geom_vline(xintercept = c(6.35), linetype = 2, color = "orange")+
-  geom_text(aes(x = 8.37+1.5, y = 6, label = "平均值"), color = "red")+
-  geom_text(aes(x = 6.35-1.5, y = 5, label = "中位數"), color = "orange")+
-  labs(x = "時間", y = "次數")+
-  theme_light()+
-  theme(legend.position = "none",
-        legend.title = element_blank(),
-        axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        panel.border = element_blank())
+data_4 %>%
+  ggplot(aes(time)) +
+  geom_histogram() +
+  geom_vline(xintercept = c(8.37), linetype = 1, color = "red") +
+  geom_vline(xintercept = c(6.35), linetype = 2, color = "orange") +
+  geom_text(aes(x = 8.37 + 1.5, y = 6, label = "平均值"), color = "red") +
+  geom_text(aes(x = 6.35 - 1.5, y = 5, label = "中位數"), color = "orange") +
+  labs(x = "時間", y = "次數") +
+  theme_light() +
+  theme(
+    legend.position = "none",
+    legend.title = element_blank(),
+    axis.ticks = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_blank()
+  )
 
-data_4%>%
-  ggplot(aes(time))+
-  geom_boxplot()+
-  scale_y_continuous(limits = c(-1.5,1.5))+
-  theme_light()+
-  theme(legend.position = "none",
-        legend.title = element_blank(),
-        axis.title = element_blank(),
-        axis.ticks = element_blank(),
-        axis.text.y = element_blank(),
-        panel.background = element_blank(),
-        panel.border = element_blank())
+data_4 %>%
+  ggplot(aes(time)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(-1.5, 1.5)) +
+  theme_light() +
+  theme(
+    legend.position = "none",
+    legend.title = element_blank(),
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_blank()
+  )
 ```
 
 # Mini Project  
@@ -247,93 +275,117 @@ data_4%>%
 
 假設這三台 ATM 沒有提款或存款上限，現收集連續30天的資料，並記錄交易類
 
-
 ```{r, warning=F, message=F}
-data_5 = "20221111_midterm_exam_atm_data.csv"%>%fread
-```
-
-```{r, warning=F, message=F}
-data_5%>%
-  group_by(Location, Type)%>%
-  summarise(sample = n(),
-            sum = Amount%>%sum,
-            mean = Amount%>%mean(),
-            q1 = Amount%>%quantile(., probs = .25),
-            q2 = Amount%>%quantile(., probs = .50),
-            q3 = Amount%>%quantile(., probs = .75))%>%
-  mutate_if(is.numeric, ~comma(., 1))%>%
-  kable(col.names = c("位置", "交易", "次數", "總計", "平均值", "25 th", "50 th", "75 th"),
-        align = "ccrrrrrr")%>%
-  collapse_rows(c(1,2))%>%
-  add_header_above(c(" "= 3, "金額" = 5))%>%
+data_5 <- "20221111_midterm_exam_atm_data.csv" %>% fread()
+data_5 %>%
+  group_by(Location, Type) %>%
+  summarise(
+    sample = n(),
+    sum = Amount %>% sum(),
+    mean = Amount %>% mean(),
+    q1 = Amount %>% quantile(., probs = .25),
+    q2 = Amount %>% quantile(., probs = .50),
+    q3 = Amount %>% quantile(., probs = .75)
+  ) %>%
+  mutate_if(is.numeric, ~ comma(., 1)) %>%
+  kable(
+    col.names = c(
+      "位置", "交易", "次數", "總計",
+      "平均值", "25 th", "50 th", "75 th"
+    ),
+    align = "ccrrrrrr"
+  ) %>%
+  collapse_rows(c(1, 2)) %>%
+  add_header_above(c(" " = 3, "金額" = 5)) %>%
   kable_styling(full_width = T, c("hover", "condensed", "striped"))
 ```
+
 ```{r, warning=F, message=F}
-data_5%>%
-  group_by(Type, Location, Date, Hour)%>%
-  summarise( n =n(),
-             sum = Amount%>%sum)%>%
-  ggplot(aes(x = Hour, y = n, color = Date%>%factor, size = sum))+
-  geom_point(alpha = .3)+
-  geom_smooth(se = F, size = .5, color = "red", linetype = 2)+
-  labs(x = "Hour", "Times")+
-  facet_wrap(Type~Location, ncol = 4, scales = "free")+
-  scale_size(label = comma_format(1))+
-  guides(color = F)+
-  labs(color = "時間", size = "金額", x = "時間", y = "次數")+
-  theme_light()+
-  theme(legend.position = "bottom",
-        strip.background = element_blank(),
-        strip.text = element_text(color = "gray20"),
-        axis.title = element_blank(),
-        axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        panel.border = element_blank())
+data_5 %>%
+  group_by(Type, Location, Date, Hour) %>%
+  summarise(
+    n = n(),
+    sum = Amount %>% sum()
+  ) %>%
+  ggplot(aes(x = Hour, y = n, color = Date %>% factor(), size = sum)) +
+  geom_point(alpha = .3) +
+  geom_smooth(se = F, size = .5, color = "red", linetype = 2) +
+  labs(x = "Hour", "Times") +
+  facet_wrap(Type ~ Location, ncol = 4, scales = "free") +
+  scale_size(label = comma_format(1)) +
+  guides(color = F) +
+  labs(color = "時間", size = "金額", x = "時間", y = "次數") +
+  theme_light() +
+  theme(
+    legend.position = "bottom",
+    strip.background = element_blank(),
+    strip.text = element_text(color = "gray20"),
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_blank()
+  )
 ```
 
 ```{r, warning=F, message=F}
-data_5%>%
-  group_by(Type, Location, Weekday, Hour)%>%
-  summarise( n =n(),
-             sum = Amount%>%sum)%>%
-  ggplot(aes(x = Hour, y = n, color = Weekday%>%factor, size = sum))+
-  geom_point(alpha = .3)+
-  geom_smooth(se = F, size = .5, linetype = 2)+
-  facet_wrap(Type~Location, ncol = 4, scales = "free")+
-  scale_size(label = comma_format(1))+
-  labs(color = "週次日期", size = "金額", x = "小時", y = "次數")+
-  theme_light()+
-  theme(legend.position = "bottom",
-        strip.background = element_blank(),
-        strip.text = element_text(color = "gray20"),
-        axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        panel.border = element_blank())
+data_5 %>%
+  group_by(Type, Location, Weekday, Hour) %>%
+  summarise(
+    n = n(),
+    sum = Amount %>% sum()
+  ) %>%
+  ggplot(aes(x = Hour, y = n, color = Weekday %>% factor(), size = sum)) +
+  geom_point(alpha = .3) +
+  geom_smooth(se = F, size = .5, linetype = 2) +
+  facet_wrap(Type ~ Location, ncol = 4, scales = "free") +
+  scale_size(label = comma_format(1)) +
+  labs(color = "週次日期", size = "金額", x = "小時", y = "次數") +
+  theme_light() +
+  theme(
+    legend.position = "bottom",
+    strip.background = element_blank(),
+    strip.text = element_text(color = "gray20"),
+    axis.ticks = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_blank()
+  )
 ```
 
 ```{r, warning=F, message=F}
-data_5%>%
-  mutate(cashflow = ifelse(Type == "Deposit", Amount, ifelse(Type == "Withdrawal", -Amount, 0)),
-         datehour = ("2022-01-01"%>%as.Date()+Date-1)%>%format(., paste("%Y-%m-%d ", sprintf("%02d", Hour), ":00:00", sep =""))%>%as.POSIXct())%>%
-  group_by(Location, datehour, Weekday)%>%
-  mutate(cashflow = cashflow%>%sum)%>%
-  ungroup%>%
-  arrange(Location, datehour)%>%
-  group_by(Location)%>%
-  mutate(cashflow = cashflow%>%cumsum)%>%
-  ggplot(aes(datehour, cashflow))+
-  geom_line()+
-  facet_wrap(~Location, scale = "free_y", ncol = 1)+
-  scale_y_continuous(labels = comma_format(1))+
-  labs(x = "日期時間", y = "存提差")+
-  theme_light()+
-  theme(legend.position = "none",
-        legend.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text = element_text(color = "gray20"),
-        axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        panel.border = element_blank())
+data_5 %>%
+  mutate(
+    cashflow = ifelse(Type == "Deposit",
+      Amount,
+      ifelse(Type == "Withdrawal", -Amount, 0)
+    ),
+    datehour = ("2022-01-01" %>% as.Date() + Date - 1) %>%
+      format(., paste("%Y-%m-%d ",
+        sprintf("%02d", Hour),
+        ":00:00",
+        sep = ""
+      )) %>% as.POSIXct()
+  ) %>%
+  group_by(Location, datehour, Weekday) %>%
+  mutate(cashflow = cashflow %>% sum()) %>%
+  ungroup() %>%
+  arrange(Location, datehour) %>%
+  group_by(Location) %>%
+  mutate(cashflow = cashflow %>% cumsum()) %>%
+  ggplot(aes(datehour, cashflow)) +
+  geom_line() +
+  facet_wrap(~Location, scale = "free_y", ncol = 1) +
+  scale_y_continuous(labels = comma_format(1)) +
+  labs(x = "日期時間", y = "存提差") +
+  theme_light() +
+  theme(
+    legend.position = "none",
+    legend.title = element_blank(),
+    strip.background = element_blank(),
+    strip.text = element_text(color = "gray20"),
+    axis.ticks = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_blank()
+  )
 ```
 
 ## 現在該銀行想要擬定一份現金運送的計畫，該計畫需要說明運送時間與頻率、應準備的金額等，除此之外，您亦可視情況補充計畫內容
@@ -357,36 +409,45 @@ data_5%>%
 不同，假設為常態分佈提款金額可能 <0 不符合邏輯，也不會發生
 
 ```{r, warning=F, message=F}
-data_5%>%
-  filter(Type == "Withdrawal",
-         Location == "CampusA")%>%
-  summarise(mean = Amount%>%mean,
-            sd = Amount%>%mean,
-            p_less_than_5k = pnorm(5000, mean, sd),
-            less_than_5k = sum(Amount<5000)/n())%>%
-  mutate_at(.vars = c("mean", "sd"), ~comma(.,1))%>%
-  mutate_at(.vars = c("p_less_than_5k", "less_than_5k"), ~percent(.,.01))%>%
-  kable(col.names = c("平均值", "標準差", "推估<5K 機率", "實際 <5K 比例"))%>%
+data_5 %>%
+  filter(
+    Type == "Withdrawal",
+    Location == "CampusA"
+  ) %>%
+  summarise(
+    mean = Amount %>% mean(),
+    sd = Amount %>% mean(),
+    p_less_than_5k = pnorm(5000, mean, sd),
+    less_than_5k = sum(Amount < 5000) / n()
+  ) %>%
+  mutate_at(.vars = c("mean", "sd"), ~ comma(., 1)) %>%
+  mutate_at(.vars = c("p_less_than_5k", "less_than_5k"), ~ percent(., .01)) %>%
+  kable(col.names = c(
+    "平均值", "標準差",
+    "推估<5K 機率", "實際 <5K 比例"
+  ), align = "r") %>%
   kable_styling(full_width = F)
 ```
  
 ```{r, warning=F, message=F}
-data_5%>%
-  filter(Type == "Withdrawal",
-         Location == "CampusA")%>%
-  ggplot(aes(Amount))+
-  geom_histogram()+
-  labs(x = "金額", y = "次數")+
-  scale_x_continuous(labels = comma_format(1))+
-  theme_fivethirtyeight(base_family = "wqy-microhei")+
-  theme_light()+
-  theme(legend.position = "none",
-        legend.title = element_blank(),
-        strip.background = element_blank(),
-        strip.text = element_text(color = "gray20"),
-        axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        panel.border = element_blank())
+data_5 %>%
+  filter(
+    Type == "Withdrawal",
+    Location == "CampusA"
+  ) %>%
+  ggplot(aes(Amount)) +
+  geom_histogram() +
+  labs(x = "金額", y = "次數") +
+  scale_x_continuous(labels = comma_format(1)) +
+  theme_fivethirtyeight(base_family = "wqy-microhei") +
+  theme_light() +
+  theme(
+    legend.position = "none",
+    legend.title = element_blank(),
+    strip.background = element_blank(),
+    strip.text = element_text(color = "gray20"),
+    axis.ticks = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_blank()
+  )
 ```
-
-
