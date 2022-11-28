@@ -1,38 +1,28 @@
 ---
 title: "10 - Midterm exam"
-author: "11773028	葛俊余 11773035 簡柏宇 11773040	余俊宏"
+author: "第四組<br>11773028	葛俊余<br>11773035 簡柏宇<br>11773040	余俊宏<br>"
 date: "2022-11-11"
 output:
-  html_document:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
     toc: true
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
     toc_depth: 2
     number_sections: true
 ---
-[Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
 
 ```{r, warning=F, message=F}
-
 library(dplyr)
 library(data.table)
-
 library(stringr)
 library(scales)
-
 library(ggplot2)
 library(ggthemes)
 library(ggrepel)
-
-library(plotly)
-
 library(colorspace)
-
 library(kableExtra)
-
-options(scipen = 999)
-Sys.setlocale("LC_TIME", "C")
+# options(scipen = 999)
+# Sys.setlocale("LC_TIME", "C")
 showtext::showtext.auto(enable = TRUE)
 showtext::showtext_opts(dpi = 300)
 ```
