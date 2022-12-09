@@ -1,0 +1,27 @@
+---
+title: "14 - SAS EG"
+author: "Chun Yu, Ko"
+date: "2022-12-02"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
+    number_sections: true
+---
+
+[Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
+
+# Key point
+
+## Home work: screenshot of SAS EG
+
+### Proccessing
+
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221014_SAS_EG_01.png)
+
+### Chart
+
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221014_SAS_EG_02.png)
