@@ -14,14 +14,22 @@ output:
 
 [Home page](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/)
 
-# Key point
+# Homework
 
-## Home work: screenshot of SAS EG
+## 任教年資分組和年薪高低是否有關聯性
 
-### Proccessing
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG_01.png)
 
-![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221014_SAS_EG_01.png)
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG_02.png)
 
-### Chart
+## 是否年資越高，年薪越高?
 
-![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221014_SAS_EG_02.png)
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG_03.png)
+
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG_04.png)
+
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG_05.png)
+
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG_06.png)
+
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG_07.png)

@@ -34,5 +34,5 @@ This is a repo contain the note of "Statistical Analysis" course, which is the d
  
  13. [2022-11-25 ANOVA](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221125_ANOVA.html)
 
- 14. [2022-12-02 ANOVA](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG.html)
+ 14. [2022-12-02 SAS EG](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221202_SAS_EG.html)
  
