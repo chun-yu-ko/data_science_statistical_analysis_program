@@ -1,0 +1,273 @@
+---
+title: "15 - Final exam"
+author: "第四組<br>10773020 李庭溱<br>11773028 葛俊余<br>11773035 簡柏宇<br>11773040 余俊宏<br>"
+date: "2022-11-11"
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
+    toc: true
+    toc_depth: 2
+    number_sections: true
+---
+
+```{r, warning=F, message=F, }
+library(dplyr)
+library(data.table)
+library(stringr)
+library(scales)
+library(ggplot2)
+library(ggthemes)
+library(ggrepel)
+library(colorspace)
+library(kableExtra)
+
+data_original <- "20221212_final_exam.csv" %>%
+  fread() %>%
+  setnames(c("gender", "age", "bp_sys", "bp_dia")) %>%
+  data.table() %>%
+  mutate(gender = gender %>% factor(., c(0, 1), c("Female", "Male")))
+
+data_analysis = data_original%>%
+  melt(c("gender", "age"), variable.name = "var")%>%
+  mutate(var = var%>%factor(., c("bp_sys", "bp_dia"), c("Systolic B.P.", "Diastolic B.P.")))
+  
+```
+
+# 資料說明
+
+現有一個血壓測量的樣本資料包含
+
+ - 性別  (SEX: 0=女生、1=男生)
+ 
+ - 年齡
+ 
+ - 收縮壓 (SYSBP，單位：mmHg 毫米汞柱)
+ 
+ - 舒張壓 (DIASBP，單位：mmHg 毫米汞柱)
+
+# 以下題目需要以軟體進行操作，不限使用哪一種軟體
+
+## 請描述收縮壓及舒張壓變項 
+
+```{r}
+rbind(data_analysis %>% mutate(class = "Total", type = " "),
+      data_analysis %>% mutate(class = "Gender", type = gender),
+      data_analysis %>% mutate(class = "Age", type = age),
+      data_analysis %>% mutate(class = gender, type = age))%>%
+  ggplot(aes(x = value, y = type))+
+  geom_boxplot()+
+  facet_wrap(var~class, scales = "free_y", ncol = 5)+
+  scale_x_continuous(labels = comma_format())+
+  theme_fivethirtyeight()
+```
+
+看起來有超大、超小的異常數值，不可能是人類，先排除
+
+```{r}
+data_original %>%
+  filter(bp_sys > 200 | bp_sys < 0 | bp_dia > 200 | bp_dia < 0) %>%
+  kable(escape = F, col.names = c("Gender", "Age", "Systolic B.P.", "Diastolic B.P."),
+        align = "llrr")%>%
+  kable_styling(full_width = F, c("hover", "striped", "condensed"))
+```
+
+收縮壓與舒張壓在不同人群的分佈如下所示
+
+```{r}
+
+data_analysis = data_original%>%
+  filter(!(bp_sys > 200 | bp_sys < 0 | bp_dia > 200 | bp_dia < 0)) %>%
+  melt(c("gender", "age"), variable.name = "var")%>%
+  mutate(var = var%>%factor(., c("bp_sys", "bp_dia"), c("Systolic B.P.", "Diastolic B.P.")))
+
+rbind(
+  data_analysis %>% mutate(class = "Total", type = " "),
+  data_analysis %>% mutate(class = "Gender", type = gender),
+  data_analysis %>% mutate(class = "Age", type = age),
+  data_analysis %>% mutate(class = gender, type = age)
+) %>%
+  ggplot(aes(x = value, y = type)) +
+  geom_violin() +
+  facet_wrap(var ~ class, scales = "free_y", ncol = 5) +
+  scale_x_continuous(labels = comma_format()) +
+  theme_fivethirtyeight()
+```
+
+收縮壓與舒張壓在不同人群的描述性統計指標如下所示
+
+```{r}
+
+f_summary <- function(x) {
+  x %>%
+    group_by(class, type, var) %>%
+    summarise(
+      n = n(),
+      mean = value %>% mean(na.rm = T),
+      sd = value %>% sd(na.rm = T),
+      min = value%>%min(na.rm=T),
+      q1 = value %>% quantile(probs = .25, na.rm = T),
+      q2 = value %>% quantile(probs = .50, na.rm = T),
+      q3 = value %>% quantile(probs = .75, na.rm = T),
+      max = value%>%max(na.rm=T)
+    )%>%
+    data.table
+}
+
+rbind(data_analysis %>% mutate(class = "Total", type = " ") %>% f_summary(),
+      data_analysis %>% mutate(class = "Gender", type = gender) %>% f_summary(),
+      data_analysis %>% mutate(class = "Age", type = age) %>% f_summary(),
+      data_analysis %>% mutate(class = gender, type = age) %>% f_summary())%>%
+  dcast(class + type ~ var,
+        value.var = c("n", "mean", "sd", "min", "q1", "q2", "q3", "max"))%>%
+  select(class, type,
+         `n_Systolic B.P.`, `mean_Systolic B.P.`, `sd_Systolic B.P.`,
+         `min_Systolic B.P.`, `q1_Systolic B.P.`, `q2_Systolic B.P.`, `q3_Systolic B.P.`, `max_Systolic B.P.`, 
+         `n_Diastolic B.P.`, `mean_Diastolic B.P.`, `sd_Diastolic B.P.`,
+         `min_Diastolic B.P.`, `q1_Diastolic B.P.`, `q2_Diastolic B.P.`, `q3_Diastolic B.P.`, `max_Diastolic B.P.`)%>%
+  mutate(class = class%>%
+           factor(., c("Total", "Gender", "Age", "Female", "Male")))%>%
+  mutate_if(is.numeric, ~comma(., 1))%>%
+  arrange(class, type)%>%
+  kable(escape = F, col.names = c("Char.", "Type",
+                      "Sample<br>size", "Mean", "SD",
+                      "Min", "25th", "50th", "75th", "Max",
+                      "Sample<br>size", "Mean", "SD",
+                      "Min", "25th", "50th", "75th", "Max"),
+        align = "llrrrrrrrrrrrrrrrr")%>%
+  collapse_rows(c(1))%>%
+  kable_styling(full_width = F, c("hover", "striped", "condensed"))%>%
+  add_header_above(c(" "=2, "Systolic" = 8, "Diastolic" = 8))
+```
+
+## 您是否會使用全部樣本進行分析，或是設定條件納入或排除某些樣本
+
+不會，如上表，共排除 8 筆數據
+
+## 請想辦法利用上述高血壓判斷標準，定義高血壓分期
+
+```{r}
+data_analysis_2 = data_original%>%
+  filter(!(bp_sys > 200 | bp_sys < 0 | bp_dia > 200 | bp_dia < 0)) %>%
+  mutate(ht_stage = "",
+         ht_stage = ifelse(bp_sys>=160 | bp_dia>=100, "H.T. Stage 2", ht_stage),
+         ht_stage = ifelse(ht_stage=="" &(bp_sys>=140 | bp_dia>=90), "H.T. Stage 1", ht_stage),
+         ht_stage = ifelse(ht_stage=="" &(bp_sys>=120 | bp_dia>=80), "Elevated", ifelse(ht_stage=="", "Normal", ht_stage)),
+         ht_stage = ht_stage%>%factor(., c("Normal", "Elevated", "H.T. Stage 1", "H.T. Stage 2")))
+
+data_analysis_2%>%
+  group_by(ht_stage)%>%
+  summarise(n=n())%>%
+  kable(col.names = c("H.T. stage", "Sample size"))%>%
+  kable_styling(full_width = F, c("hover", "striped", "condensed"))
+```
+
+
+## 請用適當的圖說明有高血壓的人數占比
+
+```{r}
+f_summary_2 = function(x){
+  x%>%
+    group_by(class, type, ht_stage)%>%
+    summarise(n = n())%>%
+    ungroup%>%
+    group_by(class, type)%>%
+    mutate(rate = n /sum(n))%>%
+    data.table
+}
+
+rbind(
+  data_analysis_2 %>% mutate(class = "Total", type = "Total")%>%f_summary_2,
+  data_analysis_2 %>% mutate(class = "Gender", type = gender)%>%f_summary_2,
+  data_analysis_2 %>% mutate(class = "Age", type = age)%>%f_summary_2,
+  data_analysis_2 %>% mutate(class = gender, type = paste(gender, " (", age, ")", sep = ""))%>%f_summary_2
+) %>%
+  ggplot(aes(x = rate, y = type%>%forcats::fct_rev(), fill = ht_stage)) +
+  geom_col(color = "white", position = position_stack())+
+  geom_text(aes(label = percent(rate,1)), size = 2, position = position_stack(vjust = .5))+
+  scale_x_continuous(labels = percent_format())+
+  scale_fill_discrete_sequential("RedOr", breaks = c("Normal", "Elevated", "H.T. Stage 1", "H.T. Stage 2")%>%rev)+
+  theme_fivethirtyeight()+
+  theme(legend.position = "bottom",
+        legend.title = element_blank())
+```
+## 請問血壓是否正常與性別有無統計相關
+
+再加上年齡、與性別X年齡交互項的條整之後，男生血壓正常的機率仍較低
+
+男性有正常血壓的 OR 為 0.62 [0.39 - 0.97]
+
+因此性別與血壓卻有相關，通常男性高於女姓
+
+```{r}
+data_analysis_2%>%
+  mutate(bp_normal = ht_stage %in%c("Normal"))%>%
+  glm(data =., bp_normal~age * gender)%>%
+  jtools::export_summs(error_format = "[{conf.low}, {conf.high}]")
+```
+
+# 以下題目為計算題，可以手寫、使用軟體等各種方式回答
+
+## 一名男生的收縮壓是 140 mmHg、舒張壓是 100 mmHg，請問他的收縮壓與舒張壓分別超過多少百分比的男性？
+
+ - 收縮壓低於 140 mmHg 男性有 97.67%
+ 
+ - 舒張壓低於 100 mmHg 男性有 98.94%
+ 
+ 
+```{r}
+data_analysis_2%>%
+  filter(gender == "Male")%>%
+  summarise(sys_140 = (bp_sys<140)%>%sum/n(),
+            dia_100 = (bp_dia<100)%>%sum/n())%>%
+  ungroup%>%
+  mutate_if(is.numeric, ~percent(., 0.01))%>%
+  kable(col.names = c("收縮壓 < 140 的男性", "舒張壓 < 100 的男性"), align = "r")%>%
+  kable_styling(full_width = F, c("hover", "striped", "condensed"))
+```
+
+## 假設想知道血壓正常的機率是多少，請問此樣本對於母體血壓正常的機率點估計是多少？請計算95%信賴區間
+
+ - 52% [49% - 54%]
+
+```{r}
+data_analysis_2%>%
+  summarise(n = n(),
+            normal = (ht_stage == "Normal")%>%sum,
+            rate = prop.test(x=982, n=1902, conf.level=.95)$estimate,
+            rate_upper = prop.test(x=982, n=1902, conf.level=.95)$conf.int[1],
+            rate_lower = prop.test(x=982, n=1902, conf.level=.95)$conf.int[2])%>%
+  mutate_at(.vars = c(1:2), ~comma(.,1))%>%
+  mutate_at(.vars = c(3:5), ~percent(.,1))%>%
+  kable(col.names = c("樣本人數", "正常血壓人數", "正常血壓佔比", "Lower limit", "Upper limit"), align = "r")%>%
+  kable_styling(full_width = F, c("hover", "striped", "condensed"))
+```
+
+## 女生有第一期或第二期高血壓的機率是多少
+
+ - 	52%	[49% - 54%]
+ 
+```{r}
+data_analysis_2%>%
+  filter(gender == "Female")%>%
+  summarise(n = n(),
+            normal = (ht_stage %in%c("H.T. Stage 1", "H.T. Stage 2") )%>%sum,
+            rate = prop.test(x=982, n=1902, conf.level=.95)$estimate,
+            rate_upper = prop.test(x=982, n=1902, conf.level=.95)$conf.int[1],
+            rate_lower = prop.test(x=982, n=1902, conf.level=.95)$conf.int[2])%>%
+  mutate_at(.vars = c(1:2), ~comma(.,1))%>%
+  mutate_at(.vars = c(3:5), ~percent(.,1))%>%
+  kable(col.names = c("女性樣本人數", "女性高血壓 1 2 期人數", "女性高血壓 1 2 期人數佔比", "Lower limit", "Upper limit"), align = "r")%>%
+  kable_styling(full_width = F, c("hover", "striped", "condensed"))
+```
+
+## 假設血壓是否正常服從二項式分布，請問超過10%人數有高血壓的機率是多少
+
+ - 60.1%
+```{r}
+percent(1 - pbinom(round(data_analysis_2%>%nrow()*0.1), data_analysis_2%>%nrow(), data_analysis_2$ht_stage%in%c("H.T. Stage 1", "H.T. Stage 2")%>%sum / data_analysis_2%>%nrow()), .1)
+```
+
+
+
+
