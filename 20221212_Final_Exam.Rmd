@@ -191,6 +191,7 @@ rbind(
   theme(legend.position = "bottom",
         legend.title = element_blank())
 ```
+
 ## 請問血壓是否正常與性別有無統計相關
 
 再加上年齡、與性別X年齡交互項的條整之後，男生血壓正常的機率仍較低
