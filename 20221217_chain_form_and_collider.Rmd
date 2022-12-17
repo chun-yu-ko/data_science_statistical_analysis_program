@@ -276,7 +276,31 @@ expand.grid(c("⫫", "→", "←"), c("⫫", "→", "←"))%>%
   kable_styling(full_width = F, c("hover"))
 ```
 
-# About Confounder
+# Reference of confounder
+
+## Essentials of Epidemiology in Public Health - Chapter 11 Confounding
+
+  - the mixing of effects between an exposure, an outcome
+ 
+  - the association between the exposure and outcome is "distorted" because of the relationships between the confounder and the exposure and between the confounder and the outcome
+ 
+  - Confounding can be thought of as a failure of the comparison group to reflect the counterfactual experience of the exposed group.
+ 
+  - In other words, risk factors apart from the exposure are distributed differently between the exposed and unexposed groups when confounding is present
+ 
+### criteria of confounder
+
+  - the variable must be associated with the exposure in the population that produced the cases. That is, the confounding variable must be more or less common in the exposed group than in the comparison group
+    
+  - the variable must be an independent cause or predictor of the disease, which means that the association between the confounder and the disease is present among both exposed and unexposed individuals
+    
+  - a confounding variable cannot be an intermediate step in the causal pathway between the exposure and disease
+ 
+### how todetermine whether a variable is a confounder
+
+![](https://seimwiwa.github.io/scu_master_degree_program_data_science_statistical_analysis/20221217_chain_form_and_collider_01.png)
+
+## Others
 
  - [Confounders are factors other than the exposure/intervention that may affect the outcome of interest and that can be related to exposure/intervention.](https://www.sciencedirect.com/science/article/pii/B9781416032915500081)
 
