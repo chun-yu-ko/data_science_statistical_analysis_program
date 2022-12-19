@@ -52,13 +52,9 @@ dagify(y ~ x, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = "y", "c
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
-<<<<<<< HEAD
 ```
 
 ```{r, warning=F, message=F}
-=======
-
->>>>>>> 9dde861e3322ba4be243b807c386f8377e2b5a55
 sample_size = 100000
 c <- rnorm(sample_size)
 x <- rnorm(sample_size)
@@ -76,20 +72,14 @@ export_summs(lm(y ~ x), lm(y ~ c), lm(y ~ x + c), model.names = c("x", "c", "x +
 調整 c 或 y 無意義，因 c 僅透過 x 影響 y
 
 ```{r, echo=F, warning=F, message=F}
-
 dagify(y ~ x, x ~ c, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = "y", "c" = "c")) %>%
   tidy_dagitty(layout = "tree")%>%
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
-<<<<<<< HEAD
 ```
 
 ```{r, warning=F, message=F}
-=======
-
->>>>>>> 9dde861e3322ba4be243b807c386f8377e2b5a55
-sample_size = 100000
 c <- rnorm(sample_size)
 x <- rnorm(sample_size) + 0.3 * c
 y <- .4 * x + rnorm(sample_size)
@@ -106,20 +96,14 @@ y ~ x 與 y ~ x + c 無異
 但 y ~ c 會出現假相關，可是為 y ~ c 之 collider, invert fork 為 x 所顯示的假相關
 
 ```{r, echo=F, warning=F, message=F}
-
 dagify(y ~ x, c ~ x, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = "y", "c" = "c")) %>%
   tidy_dagitty(layout = "tree")%>%
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
-<<<<<<< HEAD
 ```
 
 ```{r, warning=F, message=F}
-=======
-
->>>>>>> 9dde861e3322ba4be243b807c386f8377e2b5a55
-sample_size = 100000
 x <- rnorm(sample_size)
 c <- rnorm(sample_size) + 0.4 * x
 y <- .4 * x + rnorm(sample_size)
@@ -141,14 +125,9 @@ dagify(y ~ x, y ~ c, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = 
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
-<<<<<<< HEAD
 ```
 
 ```{r, warning=F, message=F}
-=======
-
->>>>>>> 9dde861e3322ba4be243b807c386f8377e2b5a55
-sample_size = 100000
 x <- rnorm(sample_size)
 c <- rnorm(sample_size)
 y <- .4 * x + .6 * c + rnorm(sample_size)
@@ -174,14 +153,9 @@ dagify(y ~ x, y ~ c, x ~ c, exposure = "x", outcome = "y", labels = c("x" = "x",
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
-<<<<<<< HEAD
 ```
 
 ```{r, warning=F, message=F}
-=======
-
->>>>>>> 9dde861e3322ba4be243b807c386f8377e2b5a55
-sample_size = 100000
 c <- rnorm(sample_size)
 x <- rnorm(sample_size) + .3 * c
 y <- .4 * x + .6 * c + rnorm(sample_size)
@@ -207,14 +181,9 @@ dagify(y ~ x, c ~ x, y ~ c, exposure = "x", outcome = "y", labels = c("x" = "x",
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
-<<<<<<< HEAD
 ```
 
 ```{r, warning=F, message=F}
-=======
-
->>>>>>> 9dde861e3322ba4be243b807c386f8377e2b5a55
-sample_size = 100000
 x <- rnorm(sample_size)
 c <- rnorm(sample_size) + .3 * x
 y <- .4 * x + .6 * c + rnorm(sample_size)
@@ -240,14 +209,9 @@ dagify(y ~ x, c ~ y, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = 
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
-<<<<<<< HEAD
 ```
 
 ```{r, warning=F, message=F}
-=======
-
->>>>>>> 9dde861e3322ba4be243b807c386f8377e2b5a55
-sample_size = 100000
 x <- rnorm(sample_size)
 y <- .4 * x + rnorm(sample_size)
 c <- rnorm(sample_size) + .3 * y
@@ -285,14 +249,9 @@ dagify(y ~ x, c ~ y, c ~ x, exposure = "x", outcome = "y", labels = c("x" = "x",
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
-<<<<<<< HEAD
 ```
 
 ```{r, warning=F, message=F}
-=======
-
->>>>>>> 9dde861e3322ba4be243b807c386f8377e2b5a55
-sample_size = 100000
 x <- rnorm(sample_size)
 y <- .4 * x + rnorm(sample_size)
 c <- rnorm(sample_size) + .3 * y + .6 * x
