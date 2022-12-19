@@ -52,7 +52,9 @@ dagify(y ~ x, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = "y", "c
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
+```
 
+```{r, warning=F, message=F}
 sample_size = 100000
 c <- rnorm(sample_size)
 x <- rnorm(sample_size)
@@ -76,7 +78,9 @@ dagify(y ~ x, x ~ c, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = 
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
+```
 
+```{r, warning=F, message=F}
 sample_size = 100000
 c <- rnorm(sample_size)
 x <- rnorm(sample_size) + 0.3 * c
@@ -100,7 +104,9 @@ dagify(y ~ x, c ~ x, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = 
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
+```
 
+```{r, warning=F, message=F}
 sample_size = 100000
 x <- rnorm(sample_size)
 c <- rnorm(sample_size) + 0.4 * x
@@ -123,7 +129,9 @@ dagify(y ~ x, y ~ c, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = 
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
+```
 
+```{r, warning=F, message=F}
 sample_size = 100000
 x <- rnorm(sample_size)
 c <- rnorm(sample_size)
@@ -150,7 +158,9 @@ dagify(y ~ x, y ~ c, x ~ c, exposure = "x", outcome = "y", labels = c("x" = "x",
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
+```
 
+```{r, warning=F, message=F}
 sample_size = 100000
 c <- rnorm(sample_size)
 x <- rnorm(sample_size) + .3 * c
@@ -177,7 +187,9 @@ dagify(y ~ x, c ~ x, y ~ c, exposure = "x", outcome = "y", labels = c("x" = "x",
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
+```
 
+```{r, warning=F, message=F}
 sample_size = 100000
 x <- rnorm(sample_size)
 c <- rnorm(sample_size) + .3 * x
@@ -204,7 +216,9 @@ dagify(y ~ x, c ~ y, exposure = "x", outcome = "y", labels = c("x" = "x", "y" = 
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
+```
 
+```{r, warning=F, message=F}
 sample_size = 100000
 x <- rnorm(sample_size)
 y <- .4 * x + rnorm(sample_size)
@@ -243,7 +257,9 @@ dagify(y ~ x, c ~ y, c ~ x, exposure = "x", outcome = "y", labels = c("x" = "x",
   ggdag_dseparated()+
   theme_void()+
   theme(legend.position = "none")
+```
 
+```{r, warning=F, message=F}
 sample_size = 100000
 x <- rnorm(sample_size)
 y <- .4 * x + rnorm(sample_size)
