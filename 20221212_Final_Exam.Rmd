@@ -194,17 +194,77 @@ rbind(
 
 ## 請問血壓是否正常與性別有無統計相關
 
-再加上年齡、與性別X年齡交互項的條整之後，男生血壓正常的機率仍較低
+檢定高血壓（stage 1, 2）的風險因子
 
-男性有正常血壓的 OR 為 0.62 [0.39 - 0.97]
+在單因子模型中，年齡較高者、女性，均 H.T. 的風險因子
 
-因此性別與血壓卻有相關，通常男性高於女姓
+加入年齡與性別的多因子模型中亦相同，其 OR 分別為 1.02 [1.01 - 1.03]、0.91 [0.89, 0.94]
+
+表示年齡每增加一歲，高血壓風險則增加 2%，男性高血壓的風險較女性少 9%
+
+考量不同性別年齡對高血壓盛行率可能有差異，將性別進行分層研究年齡對高血壓的影響
+
+男、女性年齡的 OR 分別為 1.03 [1.02, 1.04]、1.01 [1.00, 1.02]
+
+假設高血壓、性別、年齡三者間沒有其他複雜因素
+
+則年齡對高血壓的平均因果效應為 1.03 與 1.01 之平均 1.02，也就是每增加一歲高血壓風險則增加 2%
+
+
 
 ```{r}
+
 data_analysis_2%>%
-  mutate(bp_normal = ht_stage %in%c("Normal"))%>%
-  glm(data =., bp_normal~age * gender)%>%
-  jtools::export_summs(error_format = "[{conf.low}, {conf.high}]")
+  melt(id.vars = c("gender", "age", "ht_stage"))%>%
+  mutate(variable = variable%>%factor(., c("bp_sys", "bp_dia"), c("Systolic B.P.", "Diastolic B.P.")))%>%
+  ggplot(aes(x = age, y = value))+
+  geom_jitter(aes(shape = ht_stage), alpha = .4, size = 1)+
+  geom_smooth(se = F, method = "lm", linetype = 2, size = .8)+
+  scale_x_continuous(labels = comma_format())+
+  scale_color_discrete_diverging("Blue Red 2", breaks = c("Female", "Male"), rev=T)+
+  facet_wrap(gender ~ variable, ncol = 2, scale = "free")+
+  labs(x = "Age", y = "Systolic B.P.")+
+  theme_fivethirtyeight()+
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title = element_text())
+
+data_analysis_2%>%
+  group_by(gender, age)%>%
+  summarise(value = (ht_stage%in%c("H.T. Stage 1", "H.T. Stage 2"))%>%sum / n())%>%
+  ggplot(aes(x = age, y = value, color = gender))+
+  geom_point()+
+  geom_smooth(se = F, method = "lm")+
+  scale_x_continuous(labels = comma_format())+
+  scale_y_continuous(labels = percent_format())+
+  scale_color_discrete_diverging("Blue Red 2", breaks = c("Female", "Male"), rev=T)+
+  labs(x = "Age", y = "Prevelance of H.T.")+
+  theme_fivethirtyeight()+
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title = element_text())
+```
+
+
+```{r}
+
+data_analysis_2 = data_analysis_2%>% mutate( y = ht_stage %in% c("H.T. Stage 1", "H.T. Stage 2"))
+
+model_1 = data_analysis_2%>%glm(data =., y~age)
+
+model_2 = data_analysis_2%>%glm(data =., y~gender)
+
+model_3 = data_analysis_2%>%glm(data =., y~age + gender)
+
+model_4 = data_analysis_2%>%filter(gender == "Female")%>%glm(data =., y~age)
+
+model_5 = data_analysis_2%>%filter(gender == "Male")%>%glm(data =., y~age)
+
+jtools::export_summs(model_1, model_2, model_3, model_4, model_5, 
+                     error_format = "[{conf.low}, {conf.high}]",
+                     model.names = c("Age", "Gender", "Age + Gender", "Age, Female", "Age, Female"),
+                     exp = TRUE)
+
 ```
 
 # 以下題目為計算題，可以手寫、使用軟體等各種方式回答
